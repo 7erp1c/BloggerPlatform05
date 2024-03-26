@@ -11,9 +11,14 @@ export const authRouter = Router({})
 
 authRouter.post('/', async (req:RequestWithUsers<authView>,res:Response)=>{
     const { loginOrEmail, password } = req.body;
-    const checkResult = await UsersService.checkCredentials(loginOrEmail,password)
     if (!loginOrEmail || !password) {
         return res.status(401).json({ error: 'Missing loginOrEmail or password' });
     }
-    return res.status(204).send(checkResult)
+    const checkResult = await UsersService.checkCredentials(loginOrEmail,password)
+
+    if (checkResult) {
+        return res.status(204).send(checkResult)
+    } else {
+        return res.status(401).json({ error: 'Invalid loginOrEmail or password' });
+    }
 })
