@@ -28,9 +28,7 @@ export const UsersQueryRepository = {
             }
             // рассчитать лимиты для запроса к DB
             const documentsTotalCount = await usersCollection.countDocuments(searchKey); // Получите общее количество блогов
-            console.log('documentsTotalCount'+ documentsTotalCount)
             const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Рассчитайте общее количество страниц в соответствии с размером страницы
-            console.log('pageCount'+ pageCount)
             const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize; // Подсчитать количество пропущенных документов перед запрошенной страницей
 
             // имеет ли SortDirection значение "desc", присвойте SortDirection значение -1, в противном случае присвойте 1

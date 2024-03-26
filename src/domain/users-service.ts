@@ -21,8 +21,7 @@ export const UsersService = {
 
         }
         const createdUser = await UsersRepository.createUser(newUser)
-        console.log(passwordSalt)
-        console.log(passwordHash)
+
 
         return {
             id: createdUser.id,
