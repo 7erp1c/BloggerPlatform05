@@ -29,10 +29,8 @@ export const UsersQueryRepository = {
             else sortDirection = 1;
 
             // существуют ли поля
-            if (sortData.sortBy === "description") sortKey = {description: sortDirection};
-            else if (sortData.sortBy === "websiteUrl") sortKey = {websiteUrl: sortDirection};
-            else if (sortData.sortBy === "name") sortKey = {name: sortDirection};
-            else if (sortData.sortBy === "isMembership") sortKey = {isMembership: sortDirection};
+            if (sortData.sortBy === "login") sortKey = {login: sortDirection};
+            else if (sortData.sortBy === "email") sortKey = {email: sortDirection};
             else sortKey = {createdAt: sortDirection};
 
             // Получать документы из DB
