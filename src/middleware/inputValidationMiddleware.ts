@@ -47,12 +47,12 @@ export const blogPostValidation = [
  ]
 
 export const authValidation = [
-    oneOf([
-        check('loginOrEmail').trim().isString().isLength({min:3,max:10}).bail(),
-        check('loginOrEmail').trim().isString()
-            .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$")).bail()
-    ]),
-
+    // oneOf([
+    //     check('loginOrEmail').trim().isString().isLength({min:3,max:10}).bail(),
+    //     check('loginOrEmail').trim().isString()
+    //         .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$")).bail()
+    // ]),
+    body('loginOrEmail').trim().isString().isLength({min:3,max:10}).bail(),
     // body('loginOrEmail').custom((value,{req})=>{
     //     if(value.includes('@')){
     //         req.checkBody('loginOrEmail').trim().isString()
@@ -64,7 +64,8 @@ export const authValidation = [
     //     return true
     //
     // }),
-    check('password').trim().isString().isLength({min:6,max:20}).matches(new RegExp("^[a-zA-Z0-9_-]*$")).bail()
+    body('password').trim().isString().isLength({min:6,max:20}).matches(new RegExp("^[a-zA-Z0-9_-]*$")).bail()
+
 ]
 
 
