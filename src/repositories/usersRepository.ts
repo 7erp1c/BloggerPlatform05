@@ -6,6 +6,7 @@ export const UsersRepository = {
 //post(/)
     async createUser(newUser: UsersOutputType): Promise<UsersInputType> {
         await usersCollection.insertOne(newUser)
+        console.log(newUser)
         return newUser
     },
     async findByLoginOrEmail(loginOrEmail:string){

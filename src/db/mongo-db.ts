@@ -18,7 +18,7 @@ export const client: MongoClient = new MongoClient(mongoURI)
 export let db = client.db();
 export const blogCollection: Collection<blogsView> = db.collection<blogsView>("blogs")
 export const postCollection: Collection<PostsView> = db.collection<PostsView>("posts")
-export const usersCollection: Collection<UsersOutputType> = db.collection<UsersOutputType>("posts")
+export const usersCollection: Collection<UsersOutputType> = db.collection<UsersOutputType>("users")
 
 export const connectToDB = async () => {
     try {
