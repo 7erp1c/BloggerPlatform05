@@ -5,7 +5,7 @@ import {
     UsersInputType,
     UserViewModelType
 } from "../model/usersType/inputModelTypeUsers";
-import {blogCollection, usersCollection} from "../db/mongo-db";
+import { usersCollection} from "../db/mongo-db";
 import {getUsersView} from "../model/usersType/getUsersView";
 
 export const UsersQueryRepository = {
@@ -16,12 +16,21 @@ export const UsersQueryRepository = {
             let sortDirection: number;
 
             // есть ли у search.....Term параметр создания ключа поиска
-            if (searchLogin.searchLoginTerm) searchKey = {login: {$regex: searchLogin.searchLoginTerm,$options:"i"}};
-            if (searchEmail.searchEmailTerm) searchKey = {email: {$regex: searchEmail.searchEmailTerm,$options:"i"}};
-
+            // if (searchLogin.searchLoginTerm) searchKey = {login: {$regex: searchLogin.searchLoginTerm,$options:"i"}};
+            //             // if (searchEmail.searchEmailTerm) searchKey = {email: {$regex: searchEmail.searchEmailTerm,$options:"i"}};
+            if (searchLogin.searchLoginTerm || searchEmail.searchEmailTerm) {
+                searchKey = {
+                    $or: [
+                        searchLogin.searchLoginTerm ? { login: { $regex: searchLogin.searchLoginTerm, $options: "i" } } : {},
+                        searchEmail.searchEmailTerm ? { email: { $regex: searchEmail.searchEmailTerm, $options: "i" } } : {}
+                    ]
+                };
+            }
             // рассчитать лимиты для запроса к DB
-            const documentsTotalCount = await blogCollection.countDocuments(searchKey); // Получите общее количество блогов
+            const documentsTotalCount = await usersCollection.countDocuments(searchKey); // Получите общее количество блогов
+            console.log('documentsTotalCount'+ documentsTotalCount)
             const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Рассчитайте общее количество страниц в соответствии с размером страницы
+            console.log('pageCount'+ pageCount)
             const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize; // Подсчитать количество пропущенных документов перед запрошенной страницей
 
             // имеет ли SortDirection значение "desc", присвойте SortDirection значение -1, в противном случае присвойте 1
