@@ -9,7 +9,7 @@ import {errorsValidation} from "../middleware/errorsValidation";
 
 export const authRouter = Router({})
 
-authRouter.post('/', authValidation,errorsValidation,async (req:RequestWithUsers<authView>,res:Response)=>{
+authRouter.post('/', async (req:RequestWithUsers<authView>,res:Response)=>{
     const { loginOrEmail, password } = req.body;
     const checkResult = await UsersService.checkCredentials(loginOrEmail,password)
     if (!loginOrEmail || !password) {
