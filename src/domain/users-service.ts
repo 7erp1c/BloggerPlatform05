@@ -22,15 +22,14 @@ export const UsersService = {
         }
         const createdUser = await UsersRepository.createUser(newUser)
 
-
         return {
             id: createdUser.id,
             login: createdUser.login,
             email: createdUser.email,
             createdAt: createdUser.createdAt
         }
-
     },
+
     async checkCredentials(loginOrEmail:string, password:string) {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) {
