@@ -19,7 +19,7 @@ export const CommentsQueryRepository = {
         if (postId) searchKey = {postId: postId};
 
         // есть ли у searchNameTerm параметр создания ключа поиска
-        const documentsTotalCount = await postCollection.countDocuments(searchKey); // Receive total count of comments
+        const documentsTotalCount = await commentsCollection.countDocuments(searchKey); // Receive total count of comments
         const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Calculate total pages count according to page size
         const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize;
 

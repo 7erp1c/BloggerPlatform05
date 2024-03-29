@@ -61,13 +61,11 @@ commentsRouter
         }
         //deleted:
         const isDelete = await CommentsService.deleteComments(id)
-        if (isDelete) {
-            res.sendStatus(204);
-            return
-        } else {
+        if (!isDelete) {
             res.sendStatus(404);
             return
         }
+        return res.sendStatus(204);
     })
 
     .get('/:id', async (req, res) => {
