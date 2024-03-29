@@ -1,11 +1,3 @@
-export type PostsViewModelType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: PostsView[]
-}
-
 export type PostsView = {
     id: string,
     title: string,
@@ -15,6 +7,14 @@ export type PostsView = {
     blogName: string,
     createdAt: string,
     _id?: string;
+}
+//For query repository_______________________________________________________________
+export type PostsViewModelType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: PostsView[]
 }
 export type QueryPostRequestType = {
     sortBy?: string
@@ -29,6 +29,7 @@ export type SortPostRepositoryType = {
     pageNumber: number
     pageSize: number
 }
+//Query type↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑Query type↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑Query type
 export type ParamsId = {
     blogId:string
 }

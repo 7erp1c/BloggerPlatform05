@@ -3,9 +3,10 @@ import {JwtService} from "../../application/jwt-service";
 import {UsersService} from "../users-service";
 import {CommentsRepositories} from "../../repositories/comments/commentsRepository";
 import {CommentViewOutput} from "../../model/commentsType/commentsView";
+import {PostsRepositories} from "../../repositories/postsRepositories";
 
 export const CommentsService = {
-    async createComments( content:string, foundPostId:string,token:string):Promise<CommentViewOutput> {
+    async createComments(content: string, foundPostId: string, token: string): Promise<CommentViewOutput> {
         const userId = await JwtService.getUserIdByToken(token);
         const id = userId ? userId.toHexString() : null;
         const user = await UsersService.findUserById(id)
@@ -18,12 +19,11 @@ export const CommentsService = {
                 userLogin: user?.login
             },
             createdAt: new Date().toISOString(),
-            postId:foundPostId
+            postId: foundPostId
 
-        };
+        }
         const createdComment = await CommentsRepositories.createComments(newComment)
-        console.log(createdComment)
-        return  {
+        return {
             id: createdComment.id,
             content: createdComment.content,
             commentatorInfo: {
@@ -33,4 +33,17 @@ export const CommentsService = {
             createdAt: createdComment.createdAt
         }
     },
+
+    async allComments(id: string) {
+        return await CommentsRepositories.allComments(id);
+    },
+
+    async deleteComments(id:string){
+        return await CommentsRepositories.deleteComments(id);
+    },
+
+    async updateComment(commentId:string,content:string){
+        return await CommentsRepositories.updateComment(commentId,content)
+    }
+
 }

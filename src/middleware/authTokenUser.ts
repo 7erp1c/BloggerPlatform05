@@ -11,8 +11,11 @@ export const authTokenMiddleware = async (req: Request, res: Response, next: Nex
     const token = req.headers.authorization.split(' ')[1]// "bearer dgsdsdddgsdgddsgdgsdgdgsdgsdgsgdgsd"
 
     const userId = await JwtService.getUserIdByToken(token)
+    // console.log("userId: "+ userId)
     if (userId) {
-        req.user = await UsersService.findUserById(userId)
+        req.userId = userId.toHexString()
+        //req.user = await UsersService.findUserById(userId)
+        // console.log("user: "+ req.user)
       return  next()
     }
   return  res.send(401)
