@@ -1,24 +1,58 @@
 import {Request,Response,Router} from "express";
 import {UsersService} from "../domain/users-service";
-import {authView} from "../model/authType/authType";
+import {authView, getAuthType} from "../model/authType/authType";
 import {RequestWithUsers} from "../typeForReqRes/helperTypeForReq";
-import {authValidation} from "../middleware/inputValidationMiddleware";
-import {errorsValidation} from "../middleware/errorsValidation";
+import {JwtService} from "../application/jwt-service";
+import {BlogsQueryRepository} from "../repositoriesQuery/blogs-query-repository";
+import {authTokenMiddleware} from "../middleware/authTokenUser";
+import {ObjectId} from "mongodb";
+import {convertToGetAuthType} from "../model/authType/getAuthView";
 
 
 
 export const authRouter = Router({})
 
-authRouter.post('/', async (req:RequestWithUsers<authView>,res:Response)=>{
+authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
     const { loginOrEmail, password } = req.body;
     if (!loginOrEmail || !password) {
-        return res.status(401).json({ error: 'Missing loginOrEmail or password' });
+       return  res.status(401)
     }
-    const checkResult = await UsersService.checkCredentials(loginOrEmail,password)
+    const user = await UsersService.checkCredentials(loginOrEmail,password)
 
-    if (checkResult) {
-        return res.status(204).send(checkResult)
-    } else {
-        return res.status(401).json({ error: 'Invalid loginOrEmail or password' });
+    if (user) {
+        const token = await JwtService.createJWT(user)
+       return  res.status(200).send({
+             "accessToken": token
+         })
+
     }
+       return  res.status(401)
+
+})
+authRouter.get('/me', authTokenMiddleware, async(req:Request,res:Response)=>{
+
+        if (!req.headers.authorization) {
+            return res.status(401).send('Unauthorized');
+        }
+        const token = req.headers.authorization?.split(' ')[1];
+
+        const userId = await JwtService.getUserIdByToken(token);
+
+        const id = userId ? userId.toHexString() : null;
+        if (!id) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        const user = await UsersService.findUserById(id);
+        if (!user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        const responseData: getAuthType  = {
+            email: user.email,
+            login: user.login,
+            userId: user.id
+        }
+         return res.status(200).send(responseData);
+
 })

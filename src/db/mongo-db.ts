@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import {blogsView} from "../model/blogsType/blogsView";
 import {PostsView} from "../model/postsType/postsView";
 import {UsersOutputType} from "../model/usersType/inputModelTypeUsers";
+import {CommentView} from "../model/commentsType/commentsView";
 
 dotenv.config()
 
@@ -20,6 +21,7 @@ export const blogCollection: Collection<blogsView> = db.collection<blogsView>("b
 export const postCollection: Collection<PostsView> = db.collection<PostsView>("posts")
 export const usersCollection: Collection<UsersOutputType> = db.collection<UsersOutputType>("users")
 
+export const commentsCollection: Collection<CommentView> = db.collection<CommentView>("comments")
 export const connectToDB = async () => {
     try {
         await client.connect()

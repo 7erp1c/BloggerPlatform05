@@ -2,6 +2,7 @@ import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelType
 import bcrypt from 'bcrypt'
 import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
+import {getAuthType} from "../model/authType/authType";
 
 
 export const UsersService = {
@@ -36,7 +37,12 @@ export const UsersService = {
             return false
         }
         const passwordHash = await this._generateHash(password, user.passwordSalt)
-        return user.passwordHash === passwordHash;
+        if(user.passwordHash === passwordHash){
+            return user
+        }else{
+            return null
+        }
+
 
     },
     async _generateHash(password: string, salt: string) {
@@ -50,5 +56,9 @@ export const UsersService = {
 //delete(/id)
     async deleteUser(id: string): Promise<boolean> {
         return await UsersRepository.deleteUser(id)
+    },
+//get(id)
+    async findUserById(id:any){
+        return await UsersRepository.findUserById(id)
     }
 }

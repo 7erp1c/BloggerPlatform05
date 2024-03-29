@@ -1,3 +1,5 @@
+import exp from "node:constants";
+
 export type postsCreateAndPutModel = {
     title: string,
     shortDescription: string,
@@ -9,4 +11,11 @@ export type postsCreateAndPutModel = {
 
 export type postCreateForBlog = {
     blogId: string
+}
+
+export type commentCreateContent = {
+    content:string
+}
+export type postIdForComments = {
+    postId: string
 }

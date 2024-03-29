@@ -11,9 +11,7 @@ export type UsersInputType = {
     login:string,
     email:string,
     password?:string|undefined,
-    createdAt:string,
-
-
+    createdAt?:string,
 }
 
 export type UsersOutputType = {

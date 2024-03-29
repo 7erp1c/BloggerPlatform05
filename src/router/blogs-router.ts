@@ -5,16 +5,16 @@ import {
     RequestWithDelete,
     RequestWithPut
 } from "../typeForReqRes/helperTypeForReq";
-import {BlogsService} from "../domain/blogs-server";
+import {BlogsService} from "../domain/blogs-service";
 import {authGuardMiddleware} from "../middleware/authGuardMiddleware";
 import {errorsValidation} from "../middleware/errorsValidation";
 import {blogPostValidation, blogsValidation} from "../middleware/inputValidationMiddleware";
 import {postCreateForBlog, postsCreateAndPutModel} from "../typeForReqRes/postsCreateAndPutModel";
-import {PostsService} from "../domain/posts-server";
+import {PostsService} from "../domain/posts-service";
 import {QueryBlogRequestType, SearchBlogRepositoryType, SortBlogRepositoryType} from "../model/blogsType/blogsView";
-import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
+import {BlogsQueryRepository} from "../repositoriesQuery/blogs-query-repository";
 import {ParamsId, SortPostRepositoryType} from "../model/postsType/postsView";
-import {PostsQueryRepository} from "../repositories/posts-query-repository";
+import {PostsQueryRepository} from "../repositoriesQuery/posts-query-repository";
 
 
 export const blogsRouter = Router({})

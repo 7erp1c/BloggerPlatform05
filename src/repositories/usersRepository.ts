@@ -1,5 +1,7 @@
-import { usersCollection} from "../db/mongo-db";
+import {usersCollection} from "../db/mongo-db";
 import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelTypeUsers";
+import {convertToGetAuthType} from "../model/authType/getAuthView";
+
 
 
 export const UsersRepository = {
@@ -19,7 +21,9 @@ export const UsersRepository = {
         const result = await usersCollection.deleteOne({id:id})
         return result.deletedCount === 1
     },
-
+    async findUserById(id:string){
+        return await usersCollection.findOne({id}, {projection: {_id: 0}})
+    },
 
 
 }

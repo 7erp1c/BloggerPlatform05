@@ -49,5 +49,6 @@ export const PostsService = {
 //delete(/id)
     async deletePosts(id: string): Promise<boolean> {
         return PostsRepositories.deletePosts(id)
-    }
+    },
+
 }

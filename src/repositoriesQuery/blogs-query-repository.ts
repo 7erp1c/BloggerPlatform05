@@ -12,6 +12,7 @@ import {getBlogsView} from "../model/blogsType/getBlogsView";
 export const BlogsQueryRepository = {
 
      async findFullBlogs(sortData: SortBlogRepositoryType, searchData: SearchBlogRepositoryType): Promise<BlogViewModelType> {
+        //Определяются ключи для поиска и сортировки в зависимости от переданных данных.
         let searchKey = {};
         let sortKey = {};
         let sortDirection: number;

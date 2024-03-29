@@ -6,7 +6,7 @@ import {
     UsersInputType
 } from "../model/usersType/inputModelTypeUsers";
 import {RequestWithDelete, RequestWithUsers} from "../typeForReqRes/helperTypeForReq";
-import {UsersQueryRepository} from "../repositories/user-query-repositoriy";
+import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 
 import {_delete_all_} from "../typeForReqRes/blogsCreateAndPutModel";
 import {usersValidation} from "../middleware/inputValidationMiddleware";

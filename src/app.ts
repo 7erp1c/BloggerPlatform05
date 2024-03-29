@@ -4,13 +4,15 @@ import {postsRouter} from "./router/posts-router";
 import {usersRouter} from "./router/users-router";
 import { db} from './db/mongo-db';
 import { authRouter } from './router/auth-router';
+import {commentsRouter} from "./router/comments/comments-router";
 export const app = express()
 
 app.use(express.json())
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
-app.use('/auth/login', authRouter)
+app.use('/auth/', authRouter)
+app.use('/comments/',commentsRouter)
 
 
 app.get('/', (req: Request, res: Response) => {
