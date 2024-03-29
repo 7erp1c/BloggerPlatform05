@@ -3,9 +3,6 @@ import {authTokenMiddleware} from "../../middleware/authTokenUser";
 import {CommentsService} from "../../domain/comments/comments-service";
 import {RequestWithDelete} from "../../typeForReqRes/helperTypeForReq";
 import {_delete_all_} from "../../typeForReqRes/blogsCreateAndPutModel";
-import {JwtService} from "../../application/jwt-service";
-import {UsersService} from "../../domain/users-service";
-import {PostsService} from "../../domain/posts-service";
 import {commentValidation} from "../../middleware/inputValidationMiddleware";
 import {errorsValidation} from "../../middleware/errorsValidation";
 
@@ -56,7 +53,7 @@ commentsRouter
         //     return res.sendStatus(404)
         // }
 
-        if (!idComments || !idComments.commentatorInfo || user !== idComments?.commentatorInfo.userId) {
+        if (!idComments || !idComments.commentatorInfo || user !== idComments.commentatorInfo.userId) {
             return res.status(403)
         }
         //deleted:

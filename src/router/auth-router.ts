@@ -3,11 +3,7 @@ import {UsersService} from "../domain/users-service";
 import {authView, getAuthType} from "../model/authType/authType";
 import {RequestWithUsers} from "../typeForReqRes/helperTypeForReq";
 import {JwtService} from "../application/jwt-service";
-import {BlogsQueryRepository} from "../repositoriesQuery/blogs-query-repository";
 import {authTokenMiddleware} from "../middleware/authTokenUser";
-import {ObjectId} from "mongodb";
-import {convertToGetAuthType} from "../model/authType/getAuthView";
-
 
 
 export const authRouter = Router({})
