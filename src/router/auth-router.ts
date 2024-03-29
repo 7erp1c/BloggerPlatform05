@@ -19,14 +19,14 @@ authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
     }
     const user = await UsersService.checkCredentials(loginOrEmail,password)
 
-    if (user) {
-        const token = await JwtService.createJWT(user)
-       return  res.status(200).send({
-             "accessToken": token
-         })
-
+    if (!user) {
+        return  res.status(401)
     }
-       return  res.status(401)
+
+    const token = await JwtService.createJWT(user)
+    return  res.status(200).send({
+        "accessToken": token
+    })
 
 })
 authRouter.get('/me', authTokenMiddleware, async(req:Request,res:Response)=>{

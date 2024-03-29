@@ -52,11 +52,11 @@ commentsRouter
             return res.status(401).send('Unauthorized');
         }
         const idComments = await CommentsService.allComments(id)
-        if (!idComments) {
-            return res.sendStatus(404)
-        }
+        // if (!idComments) {
+        //     return res.sendStatus(404)
+        // }
 
-        if (user !== idComments?.commentatorInfo.userId) {
+        if (!idComments || !idComments.commentatorInfo || user !== idComments?.commentatorInfo.userId) {
             return res.status(403)
         }
         //deleted:
