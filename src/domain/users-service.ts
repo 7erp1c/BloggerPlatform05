@@ -2,7 +2,7 @@ import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelType
 import bcrypt from 'bcrypt'
 import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
-import {getAuthType} from "../model/authType/authType";
+
 
 
 export const UsersService = {
