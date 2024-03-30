@@ -39,12 +39,12 @@ export const UsersService = {
         }
         const passwordHash = await this._generateHash(password, user.passwordSalt)
         console.log("checkCredentials 2 " + passwordHash)
-        if(user.passwordHash !== passwordHash) {
+        if(user.passwordHash === passwordHash) {
+            return user
+
+        }else {
             return null
         }
-        return user
-
-
 
     },
     async _generateHash(password: string, salt: string) {

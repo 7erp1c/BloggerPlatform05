@@ -3,7 +3,6 @@ import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelType
 import {convertToGetAuthType} from "../model/authType/getAuthView";
 
 
-
 export const UsersRepository = {
 //post(/)
     async createUser(newUser: UsersOutputType): Promise<UsersInputType> {
@@ -11,21 +10,18 @@ export const UsersRepository = {
         console.log(newUser)
         return newUser
     },
-    async findByLoginOrEmail(loginOrEmail:string){
+    async findByLoginOrEmail(loginOrEmail: string) {
 
-        const find =  await usersCollection
-            .findOne({$or:[{email:loginOrEmail},{login:loginOrEmail}]})
-        if(!find){
-            return false
-        }
-        return find
+        return await usersCollection
+            .findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+
     },
     //delete(/id)
-    async deleteUser(id: string):Promise<boolean> {
-        const result = await usersCollection.deleteOne({id:id})
+    async deleteUser(id: string): Promise<boolean> {
+        const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
-    async findUserById(id:string){
+    async findUserById(id: string) {
         return await usersCollection.findOne({id}, {projection: {_id: 0}})
     },
 
