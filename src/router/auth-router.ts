@@ -14,7 +14,7 @@ authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
        return  res.status(401)
     }
     const user = await UsersService.checkCredentials(loginOrEmail,password)
-
+    console.log("authRouter.post " + user)
     if (!user) {
         return  res.status(401)
     }
