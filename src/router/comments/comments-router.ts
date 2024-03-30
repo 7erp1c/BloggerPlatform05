@@ -68,5 +68,8 @@ commentsRouter
     .get('/:id', async (req, res) => {
         const {id} = req.params
         const users = await CommentsService.allComments(id)
+        if(!users){
+            return res.sendStatus(404)
+        }
         return res.status(200).send(users)
     })
