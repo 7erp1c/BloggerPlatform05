@@ -6,6 +6,7 @@ import {JwtService} from "../application/jwt-service";
 import {authTokenMiddleware} from "../middleware/authTokenUser";
 
 
+
 export const authRouter = Router({})
 
 authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
@@ -14,13 +15,15 @@ authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
        return  res.status(401)
     }
     const user = await UsersService.checkCredentials(loginOrEmail,password)
-    console.log("authRouter.post " + user)
+
     if (!user) {
         return  res.status(401)
     }
 
     const token = await JwtService.createJWT(user)
-    return  res.status(200).send(token)
+    return  res.status(200).send({
+        "accessToken": token
+    })
 
 })
 authRouter.get('/me', authTokenMiddleware, async(req:Request,res:Response)=>{

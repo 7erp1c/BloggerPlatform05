@@ -33,18 +33,16 @@ export const UsersService = {
 
     async checkCredentials(loginOrEmail:string, password:string) {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
-        console.log("checkCredentials 1 " + user)
         if (!user) {
             return false
         }
         const passwordHash = await this._generateHash(password, user.passwordSalt)
-        console.log("checkCredentials 2 " + passwordHash)
-        if(user.passwordHash === passwordHash) {
+        if(user.passwordHash === passwordHash){
             return user
-
-        }else {
+        }else{
             return null
         }
+
 
     },
     async _generateHash(password: string, salt: string) {
@@ -52,7 +50,7 @@ export const UsersService = {
             throw new Error('data and salt arguments required');
         }
         const hash = await bcrypt.hash(password, salt);
-        //console.log('hash' + hash);
+        console.log('hash' + hash);
         return hash;
     },
 //delete(/id)
