@@ -4,12 +4,14 @@ import {authView, getAuthType} from "../model/authType/authType";
 import {RequestWithUsers} from "../typeForReqRes/helperTypeForReq";
 import {JwtService} from "../application/jwt-service";
 import {authTokenMiddleware} from "../middleware/authTokenUser";
+import {authValidation} from "../middleware/inputValidationMiddleware";
+import {errorsValidation} from "../middleware/errorsValidation";
 
 
 
 export const authRouter = Router({})
 
-authRouter.post('/login', async (req:RequestWithUsers<authView>,res:Response)=>{
+authRouter.post('/login', authValidation, errorsValidation,async (req:RequestWithUsers<authView>,res:Response)=>{
     const { loginOrEmail, password } = req.body;
     if (!loginOrEmail || !password) {
        return  res.status(401)
