@@ -28,7 +28,7 @@ commentsRouter
         const updateComment = await CommentsService.updateComment(commentId, content)
 
         if (!updateComment) {
-            res.status(404).send()
+            res.sendStatus(404)
             return
         }
         return res.sendStatus(204)
