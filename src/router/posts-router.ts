@@ -59,6 +59,9 @@ postsRouter
             return res.sendStatus(404)
         }
         const foundPostId = foundPostsFromRep.id
+        if (!foundPostId) {
+            return res.sendStatus(404)
+        }
 
         const newComment = await CommentsService.createComments(content, foundPostId, token)
         return res.status(201).send(newComment)
