@@ -22,7 +22,7 @@ commentsRouter
             return res.sendStatus(404)
         }
         if (user !== idComments?.commentatorInfo.userId) {
-            return res.status(403)
+            return res.sendStatus(403)
         }
 
         const updateComment = await CommentsService.updateComment(commentId, content)
@@ -31,7 +31,7 @@ commentsRouter
             res.status(404).send()
             return
         }
-        return res.status(204)
+        return res.sendStatus(204)
     })
 
     .delete('/:id', authTokenMiddleware, async (req: RequestWithDelete<_delete_all_>, res) => {
@@ -54,7 +54,7 @@ commentsRouter
         // }
 
         if (!idComments || !idComments.commentatorInfo || user !== idComments.commentatorInfo.userId) {
-            return res.status(403)
+            return res.sendStatus(403)
         }
         //deleted:
         const isDelete = await CommentsService.deleteComments(id)

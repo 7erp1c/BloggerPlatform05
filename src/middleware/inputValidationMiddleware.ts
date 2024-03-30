@@ -1,4 +1,4 @@
-import {body, check, oneOf} from "express-validator";
+import {body} from "express-validator";
 import { blogCollection } from "../db/mongo-db";
 export const blogsValidation = [
 body('name').trim().isString().isLength({min:1,max:15}),
@@ -39,13 +39,34 @@ export const blogPostValidation = [
  ]
 
 export const authValidation = [
-    oneOf([
-        body('loginOrEmail').notEmpty().isLength({min:3,max:10}).bail().withMessage('Логин или email не должны быть пустыми'),
-        body('loginOrEmail').isEmail().matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$")).bail().withMessage('Некорректный формат email'),
-    ]),
-    body('password').notEmpty().withMessage('Пароль не должен быть пустым')
-
-    // oneOf([
+    body('loginOrEmail').notEmpty().trim().isString().bail(),
+    body('password').notEmpty().trim().isString().bail()
+    //
+    //
+    //     .custom((value, { req }) => {
+    //     let isValid = false;
+    //
+    //     if (value.includes('@')) {
+    //         // Если это email, проверяем его корректность
+    //         isValid = value.match(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$"));
+    //
+    //         if (!isValid) {
+    //             throw new Error('Некорректный формат email');
+    //         }
+    //     } else {
+    //         // Если это логін, проверяем его длину
+    //         isValid = value.length >= 3 && value.length <= 10;
+    //
+    //         if (!isValid) {
+    //             throw new Error('Логин должен быть от 3 до 10 символов');
+    //         }
+    //     }
+    //
+    //     return isValid;
+    // }).notEmpty().withMessage('Поле должно быть заполнено'),
+    //
+    //
+    // // oneOf([
     //     check('loginOrEmail').trim().isString().isLength({min:3,max:10}).bail(),
     //     check('loginOrEmail').trim().isString()
     //         .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$")).bail()
