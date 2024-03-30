@@ -11,13 +11,15 @@ export const commentsRouter = Router({})
 
 commentsRouter
     .put('/:commentId', authTokenMiddleware,commentValidation,errorsValidation, async (req: Request, res: Response) => {
-        const {id} = req.params
-        const {commentId, content} = req.body
+        const {commentId} = req.params
+        const { content} = req.body
         const user = req.userId
+        console.log("user   "+user)
         if (!user) {
             return res.status(401).send('Unauthorized');
         }
-        const idComments = await CommentsService.allComments(id)
+        const idComments = await CommentsService.allComments(commentId)
+        console.log("idComments   "+idComments)
         if (!idComments) {
             return res.sendStatus(404)
         }
@@ -26,7 +28,7 @@ commentsRouter
         }
 
         const updateComment = await CommentsService.updateComment(commentId, content)
-
+        console.log("updateComment   "+updateComment)
         if (!updateComment) {
             res.sendStatus(404)
             return
