@@ -3,8 +3,9 @@ import {Collection, MongoClient} from "mongodb";
 import dotenv from "dotenv";
 import {blogsView} from "../model/blogsType/blogsView";
 import {PostsView} from "../model/postsType/postsView";
-import {UsersOutputType} from "../model/usersType/inputModelTypeUsers";
 import {CommentView} from "../model/commentsType/commentsView";
+import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
+
 
 dotenv.config()
 
@@ -19,8 +20,7 @@ export const client: MongoClient = new MongoClient(mongoURI)
 export let db = client.db();
 export const blogCollection: Collection<blogsView> = db.collection<blogsView>("blogs")
 export const postCollection: Collection<PostsView> = db.collection<PostsView>("posts")
-export const usersCollection: Collection<UsersOutputType> = db.collection<UsersOutputType>("users")
-
+export const usersCollection: Collection<createUserAccountThroughAuth> = db.collection<createUserAccountThroughAuth>("users")
 export const commentsCollection: Collection<CommentView> = db.collection<CommentView>("comments")
 export const connectToDB = async () => {
     try {

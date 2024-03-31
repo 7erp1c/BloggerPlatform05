@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { UsersOutputType} from "../model/usersType/inputModelTypeUsers";
+import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
 import {settings} from "../setting";
 import {ObjectId} from "mongodb";
 
 
 export const JwtService = {
 
-    async createJWT(user:UsersOutputType) {
+    async createJWT(user:createUserAccountThroughAuth) {
         return jwt.sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '24h'})
     },
 

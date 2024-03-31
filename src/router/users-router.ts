@@ -1,9 +1,11 @@
 import {Request,Response,Router} from "express";
 import {UsersService} from "../domain/users-service";
 import {
-    QueryUserRequestType, SearchUsersEmailRepositoryType, SearchUsersLoginRepositoryType,
+    CreateUserRequest,
+    QueryUserRequestType,
+    SearchUsersEmailRepositoryType,
+    SearchUsersLoginRepositoryType,
     SortUsersRepositoryType,
-    UsersInputType
 } from "../model/usersType/inputModelTypeUsers";
 import {RequestWithDelete, RequestWithUsers} from "../typeForReqRes/helperTypeForReq";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
@@ -39,7 +41,7 @@ usersRouter.get('/', async (req: RequestWithUsers<QueryUserRequestType>, res: Re
     }
     res.status(200).json(users);
 })
-usersRouter.post('/',authGuardMiddleware,usersValidation,errorsValidation, async(req:RequestWithUsers<UsersInputType>,res: Response)=>{
+usersRouter.post('/',authGuardMiddleware,usersValidation,errorsValidation, async(req:RequestWithUsers<CreateUserRequest>,res: Response)=>{
     const{login, email, password} = req.body
     if (login && email && password) {
         const newUser = await UsersService.createUser(login, email, password)

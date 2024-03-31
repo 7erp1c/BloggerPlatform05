@@ -1,13 +1,12 @@
-import {UsersInputType} from "./inputModelTypeUsers";
+import {createUserAccountThroughAuth, UsersInputType} from "./inputModelTypeUsers";
 
 
-export const getUsersView = (dbUsers: UsersInputType): UsersInputType => {
+export const getUsersView = (dbUsers: createUserAccountThroughAuth): UsersInputType => {
     return {
         id: dbUsers.id,
-        login: dbUsers.login,
-        email: dbUsers.email,
-        password: dbUsers.password,
-        createdAt: dbUsers.createdAt,
+        login: dbUsers.accountDate.login,
+        email: dbUsers.accountDate.email,
+        createdAt: dbUsers.accountDate.createdAt,
 
 
     }

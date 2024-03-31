@@ -1,19 +1,21 @@
 import {usersCollection} from "../db/mongo-db";
-import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelTypeUsers";
-import {convertToGetAuthType} from "../model/authType/getAuthView";
+import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
+
+
 
 
 export const UsersRepository = {
 //post(/)
-    async createUser(newUser: UsersOutputType): Promise<UsersInputType> {
+    async createUser(newUser: createUserAccountThroughAuth): Promise<createUserAccountThroughAuth> {
         await usersCollection.insertOne(newUser)
         console.log(newUser)
         return newUser
     },
+
     async findByLoginOrEmail(loginOrEmail: string) {
 
         return await usersCollection
-            .findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+            .findOne({$or: [{"emailConfirmation.email": loginOrEmail}, {"emailConfirmation.login": loginOrEmail}]})
 
     },
     //delete(/id)

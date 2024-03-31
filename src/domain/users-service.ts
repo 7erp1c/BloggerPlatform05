@@ -1,7 +1,9 @@
-import {UsersInputType, UsersOutputType} from "../model/usersType/inputModelTypeUsers";
+import {createUserAccountThroughAuth, UsersInputType} from "../model/usersType/inputModelTypeUsers";
 import bcrypt from 'bcrypt'
 import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
+import {v4 as uuidv4} from "uuid";
+import {add} from "date-fns";
 
 
 
@@ -12,32 +14,44 @@ export const UsersService = {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
-        let newUser: UsersOutputType = {
+        let newUser: createUserAccountThroughAuth = {
             id: new ObjectId().toString(),
-            login: login,
-            email: email,
-            createdAt: new Date().toISOString(),
-            passwordSalt:passwordSalt,
-            passwordHash:passwordHash
+            accountDate: {
+                login: login,
+                email: email,
+                passwordHash:passwordHash,
+                passwordSalt: passwordSalt,
+                createdAt: new Date().toISOString()
+            },
+            emailConfirmation:{
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(),{hours:1,minutes:3}),//дата истечения срока
+                isConfirmed: false
+            }
 
         }
         const createdUser = await UsersRepository.createUser(newUser)
 
-        return {
+        return   {
             id: createdUser.id,
-            login: createdUser.login,
-            email: createdUser.email,
-            createdAt: createdUser.createdAt
+            login: createdUser.accountDate.login,
+            email: createdUser.accountDate.email,
+            createdAt: createdUser.accountDate.createdAt
         }
+
     },
 
     async checkCredentials(loginOrEmail:string, password:string) {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
+
         if (!user) {
             return false
         }
-        const passwordHash = await this._generateHash(password, user.passwordSalt)
-        if(user.passwordHash === passwordHash){
+        if(!user.accountDate.passwordSalt){
+            return false
+        }
+        const passwordHash = await this._generateHash(password, user.accountDate.passwordSalt)
+        if(user.accountDate.passwordHash === passwordHash){
             return user
         }else{
             return null

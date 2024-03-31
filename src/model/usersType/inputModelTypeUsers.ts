@@ -1,28 +1,41 @@
-export type UserViewModelType={
-    pagesCount : number
-    page : number
-    pageSize : number
-    totalCount : number
-    items :UsersInputType[]
+export type CreateUserRequest = {
+    login: string,
+    email: string,
+    password: string
+}
+
+export type UserViewModelType = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: UsersInputType[]
 }
 
 export type UsersInputType = {
     id: string,
-    login:string,
-    email:string,
-    password?:string|undefined,
-    createdAt?:string,
+    login: string,
+    email: string,
+    createdAt: string,
 }
 
-export type UsersOutputType = {
-    id:string;
-    login:string;
-    email:string;
-    createdAt:string;
-    passwordSalt: string;
-    passwordHash: string;
+export type createUserAccountThroughAuth = {
+    id: string,
+    accountDate: {
+        login: string,
+        email: string,
+        passwordHash?: string,
+        passwordSalt?: string,
+        createdAt: string
+    },
+    emailConfirmation?: {
+        confirmationCode: string,
+        expirationDate: Date,
+        isConfirmed: boolean
+    }
 }
 
+//__Query_________________________________
 export type QueryUserRequestType = {
     searchLoginTerm?: string | null,
     searchEmailTerm?: string | null,

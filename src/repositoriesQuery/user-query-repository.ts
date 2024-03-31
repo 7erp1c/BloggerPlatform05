@@ -1,4 +1,5 @@
 import {
+    createUserAccountThroughAuth,
     SearchUsersEmailRepositoryType,
     SearchUsersLoginRepositoryType,
     SortUsersRepositoryType,
@@ -41,7 +42,7 @@ export const UsersQueryRepository = {
             else sortKey = {createdAt: sortDirection};
 
             // Получать документы из DB
-            const users: UsersInputType[] = await usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
+            const users: createUserAccountThroughAuth[] = await usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
 
             return {
                 pagesCount: pageCount,
