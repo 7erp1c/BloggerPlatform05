@@ -3,7 +3,7 @@ import {JwtService} from "../../application/jwt-service";
 import {UsersService} from "../users-service";
 import {CommentsRepositories} from "../../repositories/comments/commentsRepository";
 import {CommentViewOutput} from "../../model/commentsType/commentsView";
-import {PostsRepositories} from "../../repositories/postsRepositories";
+
 
 export const CommentsService = {
     async createComments(content: string, foundPostId: string, token: string): Promise<CommentViewOutput> {
@@ -16,7 +16,7 @@ export const CommentsService = {
             content: content,
             commentatorInfo: {
                 userId: user?.id,
-                userLogin: user?.accountDate.login
+                userLogin: user?.accountData.login
             },
             createdAt: new Date().toISOString(),
             postId: foundPostId
