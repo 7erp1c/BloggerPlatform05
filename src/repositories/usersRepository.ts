@@ -30,6 +30,7 @@ export const UsersRepository = {
     },
     async findUserById(id: string) {
         return await usersCollection.findOne({id}, {projection: {_id: 0}})
+
     },
     async updateConfirmation(id:string){
 let result = await usersCollection

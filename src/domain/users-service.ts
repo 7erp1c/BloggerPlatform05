@@ -10,7 +10,7 @@ import {add} from "date-fns";
 export const UsersService = {
 
 //post(user)
-    async createUser(login: string, email: string, password: string): Promise<UsersInputType> {
+    async createUser(login: string,password: string, email: string ): Promise<UsersInputType> {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)

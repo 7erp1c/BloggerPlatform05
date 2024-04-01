@@ -4,15 +4,19 @@ import { UsersInputType} from "../model/usersType/inputModelTypeUsers";
 import {UsersRepository} from "../repositories/usersRepository";
 import {AuthUsersRepository} from "../repositories/authRepository";
 export const AuthService = {
-    async createUser(login:string,email:string,password:string):Promise<UsersInputType|null>{
-        const user = await UsersService.createUser(login,email,password)
-        try {
-            await EmailsManager.sendMessageWitchConfirmationCode(user)
-        }catch(error){
-            console.log(error)
-            await AuthUsersRepository.deleteUser(user.id)
+    async createUser(login:string,password:string, email:string):Promise<UsersInputType|null>{
+        const user = await UsersService.createUser(login,password,email)
+        if(!user) {
             return null
         }
+        const findUser = await UsersService.findUserById(user.id)
+
+        if(!findUser||!findUser.emailConfirmation) {
+            return null
+        }
+        console.log(findUser.accountData.email + findUser.accountData.login + findUser.emailConfirmation.confirmationCode)
+           const sendEmail =   await EmailsManager
+               .sendMessageWitchConfirmationCode(findUser.accountData.email,findUser.accountData.login,findUser.emailConfirmation.confirmationCode)
         return user
     },
 
