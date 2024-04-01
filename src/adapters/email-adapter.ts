@@ -10,9 +10,9 @@ export const EmailAdapter = {
     async sendEmail(email: string, login: string, code: string) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',// с гуглом остальное не надо
-            // host: "smtp.ethereal.email",
-            // port: 587,
-            // secure: false, // Use `true` for port 465, `false` for all other ports
+             host: "smtp.ethereal.email",
+             port: 587,
+             secure: false, // Use `true` for port 465, `false` for all other ports
             //почта и пароль для рассылки:
             auth: {
                 user: "th.great.forest@gmail.com", //My Email
