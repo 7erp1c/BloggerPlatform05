@@ -1,5 +1,6 @@
 import {usersCollection} from "../db/mongo-db";
 import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
+import {ObjectId} from "mongodb";
 
 
 
@@ -13,9 +14,13 @@ export const UsersRepository = {
     },
 
     async findByLoginOrEmail(loginOrEmail: string) {
-
         return await usersCollection
-            .findOne({$or: [{"emailConfirmation.email": loginOrEmail}, {"emailConfirmation.login": loginOrEmail}]})
+            .findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
+
+    },
+    async findUserByConfirmationCode(emailConfirmationCode:string) {
+        return await usersCollection
+            .findOne( {"emailConfirmation.confirmationCode": emailConfirmationCode})
 
     },
     //delete(/id)
@@ -26,6 +31,11 @@ export const UsersRepository = {
     async findUserById(id: string) {
         return await usersCollection.findOne({id}, {projection: {_id: 0}})
     },
+    async updateConfirmation(id:string){
+let result = await usersCollection
+    .updateOne({id},{$set:{'emailConfirmation.isConfirmed': true}})
+    return result.modifiedCount === 1
+    }
 
 
 }

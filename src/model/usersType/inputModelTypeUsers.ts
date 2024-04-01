@@ -21,7 +21,7 @@ export type UsersInputType = {
 
 export type createUserAccountThroughAuth = {
     id: string,
-    accountDate: {
+    accountData: {
         login: string,
         email: string,
         passwordHash?: string,

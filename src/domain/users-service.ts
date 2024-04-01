@@ -16,7 +16,7 @@ export const UsersService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
         let newUser: createUserAccountThroughAuth = {
             id: new ObjectId().toString(),
-            accountDate: {
+            accountData: {
                 login: login,
                 email: email,
                 passwordHash:passwordHash,
@@ -34,9 +34,9 @@ export const UsersService = {
 
         return   {
             id: createdUser.id,
-            login: createdUser.accountDate.login,
-            email: createdUser.accountDate.email,
-            createdAt: createdUser.accountDate.createdAt
+            login: createdUser.accountData.login,
+            email: createdUser.accountData.email,
+            createdAt: createdUser.accountData.createdAt
         }
 
     },
@@ -47,11 +47,11 @@ export const UsersService = {
         if (!user) {
             return false
         }
-        if(!user.accountDate.passwordSalt){
+        if(!user.accountData.passwordSalt){
             return false
         }
-        const passwordHash = await this._generateHash(password, user.accountDate.passwordSalt)
-        if(user.accountDate.passwordHash === passwordHash){
+        const passwordHash = await this._generateHash(password, user.accountData.passwordSalt)
+        if(user.accountData.passwordHash === passwordHash){
             return user
         }else{
             return null
