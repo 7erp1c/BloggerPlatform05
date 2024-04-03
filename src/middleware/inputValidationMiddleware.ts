@@ -1,5 +1,8 @@
 import {body} from "express-validator";
 import {blogCollection} from "../db/mongo-db";
+import {UsersService} from "../domain/users-service";
+import {AuthService} from "../domain/auth-service";
+import {UsersRepository} from "../repositories/usersRepository";
 
 export const blogsValidation = [
     body('name').trim().isString().isLength({min: 1, max: 15}),
@@ -30,9 +33,24 @@ export const blogPostValidation = [
     body('content').trim().isString().isLength({min: 1, max: 1000}).bail(),
 ]
 export const usersValidation = [
-    body('login').trim().isString().isLength({min: 3, max: 10}).bail(),
+    body('login').trim().isString().isLength({min: 3, max: 10}).custom(async (value) => {
+        const findUserByLogin = await UsersService.findUserByLogin(value)
+        if (!findUserByLogin) {
+            return value
+        }
+        throw new Error("User with this login already exists");
+
+    }).bail(),
     body('email').trim().isString()
-        .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$")).bail(),
+        .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$"))
+        .custom(async (value) => {
+            const findUserByEmail = await UsersService.findUserByEmail(value)
+            if (!findUserByEmail) {
+                return value
+            }
+            throw new Error("User with this email already exists");
+
+        }).bail(),
     body('password').trim().isString().isLength({min: 6, max: 20}).matches(new RegExp("^[a-zA-Z0-9_-]*$")).bail()
 ]
 
@@ -41,10 +59,25 @@ export const authValidation = [
     body('password').notEmpty().trim().isString().bail()
 ]
 export const authEmailValidation = [
-    body('email').notEmpty().trim().isString().matches(new RegExp("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")).bail(),
+    body('email')
+        .custom(async (value) => {
+            const user = await UsersService.findUserByEmail(value)
+            if (!user||user.emailConfirmation?.isConfirmed) {
+                throw new Error("User not found");
+            }
+            return value
+        }).bail(),
+
 ]
 export const authCodeValidation = [
-    body('code').notEmpty().trim().isString().bail(),
+    body('code').notEmpty().trim().isString()//.matches(new RegExp("[0-9a-f\\-]+"))
+        .custom(async (value) => {
+            const findUserByCode = await UsersRepository.findUserByConfirmationCode(value)
+            if (!findUserByCode || findUserByCode.emailConfirmation?.isConfirmed) {
+                throw new Error("Blog not found");
+            }
+            return value
+        }).bail(),
 ]
 
 export const commentValidation = [

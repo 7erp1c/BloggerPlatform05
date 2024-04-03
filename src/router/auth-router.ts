@@ -37,21 +37,28 @@ authRouter
     //регистрация и подтверждение
     .post('/registration-confirmation',authCodeValidation, errorsValidation, async (req: Request, res: Response) => {
         const {code} = req.body
-        const result = await AuthService.confirmEmail(code)
+        const result = await AuthService.confirmCode(code)
         res.status(204).send(result + " Email was verified. Account was activated")
     })
 
     .post('/registration',usersValidation,errorsValidation, async (req: Request, res: Response) => {
+
         const {login, email, password} = req.body
+
         const user = await AuthService.createUser(login, password, email)
-        res.status(204).send('Input data is accepted. Email with confirmation code will be send to passed email address')
+        if(!user){
+            return res.sendStatus(400)
+        }
+        return res.status(204).send('Input data is accepted. Email with confirmation code will be send to passed email address')
     })
 
     //повторная отправка email
     .post('/registration-email-resending', authEmailValidation,errorsValidation, async (req: Request, res: Response) => {
         const {email} = req.body
         const result = await AuthService.confirmEmail(email)
-        if (!result) return false
+        if (!result) {
+            return res.status(500);
+        }
         return res.status(204).send("Input data is accepted. Email with confirmation code will be send to passed email address. Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere")
     })
 

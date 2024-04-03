@@ -19,6 +19,7 @@ export const EmailsManager = {
         } catch (e: unknown) {
             console.error('Send email error', e); //залогировать ошибку при отправке сообщения
         }
+        return true
 
     }
 }

@@ -23,6 +23,12 @@ export const UsersRepository = {
             .findOne( {"emailConfirmation.confirmationCode": emailConfirmationCode})
 
     },
+    async findUserByEmail(email:string){
+        return await usersCollection.findOne({"accountData.email": email})
+    },
+    async findUserByLogin(login:string){
+        return await usersCollection.findOne({"accountData.login": login})
+    },
     //delete(/id)
     async deleteUser(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id})
@@ -36,6 +42,16 @@ export const UsersRepository = {
 let result = await usersCollection
     .updateOne({id},{$set:{'emailConfirmation.isConfirmed': true}})
     return result.modifiedCount === 1
+    },
+     async updateUserEmailConfirmationCode (email:string, code:string){
+        console.log("updateUserEmailConfirmationCode: "+ email +" "+ code)
+
+        // try {
+            const isUpdated = await usersCollection.updateOne({"accountData.email": email}, {$set: {"emailConfirmation.confirmationCode": code}});
+            return isUpdated.matchedCount===1;
+        // }catch (err){
+        //     return new Error("Not update confirmationCode")
+        // }
     }
 
 

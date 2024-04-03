@@ -25,7 +25,7 @@ export const UsersService = {
             },
             emailConfirmation:{
                 confirmationCode: uuidv4(),
-                expirationDate: add(new Date(),{hours:1,minutes:3}),//дата истечения срока
+                expirationDate: add(new Date(),{hours:48}),//дата истечения срока
                 isConfirmed: false
             }
 
@@ -47,6 +47,9 @@ export const UsersService = {
         if (!user) {
             return false
         }
+        // if(!user.emailConfirmation?.isConfirmed){
+        //     return null
+        // }
         if(!user.accountData.passwordSalt){
             return false
         }
@@ -74,5 +77,11 @@ export const UsersService = {
 //get(id)
     async findUserById(id:any){
         return await UsersRepository.findUserById(id)
+    },
+    async findUserByEmail(email:string){
+      return   await UsersRepository.findUserByEmail(email)
+    },
+    async findUserByLogin(login:string){
+        return   await UsersRepository.findUserByLogin(login)
     }
 }
