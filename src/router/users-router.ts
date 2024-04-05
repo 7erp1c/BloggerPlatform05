@@ -44,7 +44,7 @@ usersRouter.get('/', async (req: RequestWithUsers<QueryUserRequestType>, res: Re
 usersRouter.post('/',authGuardMiddleware,usersValidation,errorsValidation, async(req:RequestWithUsers<CreateUserRequest>,res: Response)=>{
     const{login, email, password} = req.body
     if (login && email && password) {
-        const newUser = await UsersService.createUser(login, email, password)
+        const newUser = await UsersService.createUser(login,password, email)
         res.status(201).send(newUser)
     }
 } )

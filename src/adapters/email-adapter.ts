@@ -26,10 +26,9 @@ export const EmailAdapter = {
             to: email, // list of receivers
             subject: `User registration`, // Subject line
             html: `<h1>Thank for your registration</h1>
-                  <p>User login: ${login},</p> 
-                  <p>confirmation code: </p> 
+                  <p>User login: ${login},</p>                
                   <p>To finish registration please follow the link below:
-                  <a href='https://somesite.com/confirm-email?code=${code}>'>complete registration</a>
+                  <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
                   </p>`,// html body
             //link: `<https://some-front.com/confirm-registration?code=${code}>`
         });

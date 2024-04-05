@@ -30,7 +30,7 @@ export type createUserAccountThroughAuth = {
     },
     emailConfirmation?: {
         confirmationCode: string,
-        expirationDate: Date,
+        expirationDate: string,
         isConfirmed: boolean
     }
 }

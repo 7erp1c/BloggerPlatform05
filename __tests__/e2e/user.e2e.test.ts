@@ -30,7 +30,7 @@ const validUpdateData = {
     shortDescription: "a very short new description",
     content: "some new content",
 }
-const Results =  {
+const Results = {
     pagesCount: 0,
     page: 1,
     pageSize: 10,
@@ -49,10 +49,10 @@ describe(routerName, () => {
     let testUsersID2: string;
 
     it(" - should be return 200 and empty array", async () => {
-        await request(app).get(routerName).expect(200,Results);
+        await request(app).get(routerName).expect(200, Results);
     })
     it(" - create user for test posts", async () => {
-        const res = await request(app).post(routerName)
+        const CreateUser = await request(app).post(routerName)
             .auth("admin", "qwerty")
             .send({
                 "login": "Ratmir",
@@ -61,36 +61,44 @@ describe(routerName, () => {
             })
             .expect(201);
 
-        testUsersID1 = res.body.id;
+        testUsersID1 = CreateUser.body.id;
+        const AuthUsers = request(app).get("/auth/login")
+            .send({
+                "login": "Ratmir",
+                "email": "ul-tray@bk.ru"
+            })
+            .expect(200)
 
     })
-    it("POST does not create new user with incorrect data (empty fields)", async() =>{
+    it("POST does not create new user with incorrect data (empty fields)", async () => {
         const res = await request(app).post('/users/')
-            .auth("admin","qwerty")
+            .auth("admin", "qwerty")
             .send({
                 ...emptyData
             })
-            .expect(400, {errorsMessages:[
+            .expect(400, {
+                errorsMessages: [
                     {message: "Bad request", field: "login"},
-                    {message: "Bad request", field: "password"},
-                    {message: "Bad request", field: "email"}
+                    {message: "Bad request", field: "email"},
+                    {message: "Bad request", field: "password"}
+
                 ]
             })
 
         await request(app).get(routerName).expect(200);
     })
-    it("POST incorrect Authorisation ",async()=>{
+    it("POST incorrect Authorisation ", async () => {
         const res = await request(app).post(routerName)
-            .auth('sae','dfa')
+            .auth('sae', 'dfa')
             .send()
             .expect(401)
 
         await request(app).get(routerName).expect(200)
     })
     let testUser1: any;
-    it("Post correct data",async ()=>{
+    it("Post correct data", async () => {
         const res = await request(app).post(routerName)
-            .auth('admin',"qwerty")
+            .auth('admin', "qwerty")
             .send({
                 ...overLengthData
             })
@@ -129,34 +137,9 @@ describe(routerName, () => {
             .expect(204);
         const res = await request(app).get(routerName).expect(200);
 
-       // expect(res.body.items.length).toBe(0);
+        // expect(res.body.items.length).toBe(0);
 
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 })

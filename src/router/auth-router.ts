@@ -38,28 +38,49 @@ authRouter
     .post('/registration-confirmation',authCodeValidation, errorsValidation, async (req: Request, res: Response) => {
         const {code} = req.body
         const result = await AuthService.confirmCode(code)
-        res.status(204).send(result + " Email was verified. Account was activated")
+
+        if (!result.status) {
+            res.status(400).json({
+                errorsMessages: [//result.message
+                    {
+                    message: "Invalid code or expiration date expired",
+                    field: "code"
+                }]
+            });
+            return;
+        }
+        return res.status(204).send(result + " Email was verified. Account was activated")
     })
 
-    .post('/registration',usersValidation,errorsValidation, async (req: Request, res: Response) => {
+    .post('/registration', usersValidation, errorsValidation, async (req: Request, res: Response) => {
 
         const {login, email, password} = req.body
 
         const user = await AuthService.createUser(login, password, email)
-        if(!user){
+        if (!user) {
             return res.sendStatus(400)
         }
-        return res.status(204).send('Input data is accepted. Email with confirmation code will be send to passed email address')
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(204).json({user, message: 'Input data is accepted. Email with confirmation code will be sent to the provided email address.'});
+
     })
 
     //повторная отправка email
-    .post('/registration-email-resending', authEmailValidation,errorsValidation, async (req: Request, res: Response) => {
+    .post('/registration-email-resending', authEmailValidation, errorsValidation, async (req: Request, res: Response) => {
         const {email} = req.body
+        const searchEmailInDbUser =  UsersService.findUserByEmail(email)
+        if(!searchEmailInDbUser){
+            return res.status(400).json({
+                errorsMessages:[{
+                    message: "Invalid code or expiration date expired",
+                    field: "email"
+                }]
+        })}
         const result = await AuthService.confirmEmail(email)
         if (!result) {
-            return res.status(500);
+            return res.sendStatus(500);
         }
-        return res.status(204).send("Input data is accepted. Email with confirmation code will be send to passed email address. Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere")
+        return res.status(204).send(result + " Input data is accepted. Email with confirmation code will be send to passed email address. Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere")
     })
 
     .get('/me', authTokenMiddleware, async (req: Request, res: Response) => {

@@ -70,14 +70,7 @@ export const authEmailValidation = [
 
 ]
 export const authCodeValidation = [
-    body('code').notEmpty().trim().isString()//.matches(new RegExp("[0-9a-f\\-]+"))
-        .custom(async (value) => {
-            const findUserByCode = await UsersRepository.findUserByConfirmationCode(value)
-            if (!findUserByCode || findUserByCode.emailConfirmation?.isConfirmed) {
-                throw new Error("Blog not found");
-            }
-            return value
-        }).bail(),
+    body('code').notEmpty().trim().isString().bail(),
 ]
 
 export const commentValidation = [

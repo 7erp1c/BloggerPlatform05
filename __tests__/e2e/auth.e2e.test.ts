@@ -67,6 +67,47 @@ describe(routerName, () => {
                 ]
             })
     })
+    it("---", async () => {
+        await request(app).delete("/testing/all-data")
+
+        const registration  = await request(app).post("/auth/registration")
+            .send({
+
+            "login":"_I147aKCJ",
+            "password":"123456",
+            "email":"ul_tray@bk.ru"
+
+            }).expect(204)
+
+    //     console.log(registration.body)
+    //
+    //     /*const user  = await usersCollection.findOne({
+    //         "accountData.login": "_I147aKCJ"
+    //     })*/
+    //     const user  = (await usersCollection.find({}).toArray())[0]
+    //     console.log(user, "user")
+    //     const firstCode = user.emailConfirmation!.confirmationCode
+    //
+    //     const registrationResend  = await request(app).post("/auth/registration-email-resending")
+    //         .send({
+    //             "email":"ul_tray@bk.ru"
+    //         }).expect(204)
+    //
+    //     const userAfterResend  = (await usersCollection.find({}).toArray())[0]
+    //     console.log(userAfterResend, "user")
+    //     const secondCode = userAfterResend.emailConfirmation!.confirmationCode
+    //     console.log({firstCode, secondCode}, " comparing two codes")
+    //     expect(firstCode).not.toEqual(secondCode)
+    //     await request(app).post("/auth/registration-confirmation")
+    //         .send({
+    //             code: firstCode
+    //         }).expect(400)
+    //     const registrationConfirm =  await request(app).post("/auth/registration-confirmation")
+    //         .send({
+    //             code: secondCode
+    //         }).expect(204)
+    })
+
 
 
 })

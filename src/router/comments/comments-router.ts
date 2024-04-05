@@ -5,6 +5,8 @@ import {RequestWithDelete} from "../../typeForReqRes/helperTypeForReq";
 import {_delete_all_} from "../../typeForReqRes/blogsCreateAndPutModel";
 import {commentValidation} from "../../middleware/inputValidationMiddleware";
 import {errorsValidation} from "../../middleware/errorsValidation";
+import {JwtService} from "../../application/jwt-service";
+import {UsersService} from "../../domain/users-service";
 
 
 export const commentsRouter = Router({})
@@ -38,6 +40,7 @@ commentsRouter
 
     .delete('/:id', authTokenMiddleware, async (req: RequestWithDelete<_delete_all_>, res) => {
         const {id} = req.params
+        console.log("ID:      " +id)
         //проверяем на 403 If try deleted the comment that is not your own:
         // if (!req.headers.authorization) {
         //     return res.status(401).send('Unauthorized');
@@ -45,17 +48,19 @@ commentsRouter
         // const token = req.headers.authorization?.split(' ')[1];
         // const transformationId = await JwtService.getUserIdByToken(token);
         // const userId = transformationId ? transformationId.toHexString() : null;
-        // const user = await UsersService.findUserById(userId);
+        // const searchUser = await UsersService.findUserById(userId);
         const user = req.userId
+        console.log("USER:      " +user)
         if (!user) {
             return res.status(401).send('Unauthorized');
         }
         const idComments = await CommentsService.allComments(id)
+        console.log("idComments:      " +idComments)
         if (!idComments) {
             return res.sendStatus(404)
         }
 
-        if (!idComments || !idComments.commentatorInfo || user !== idComments.commentatorInfo.userId) {
+        if (/*!searchUser||!idComments || !idComments.commentatorInfo ||*/ user !== idComments.commentatorInfo.userId) {
             return res.sendStatus(403)
         }
         //deleted:

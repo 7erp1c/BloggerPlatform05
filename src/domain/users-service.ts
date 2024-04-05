@@ -4,6 +4,7 @@ import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
+import {AuthService} from "./auth-service";
 
 
 
@@ -12,7 +13,7 @@ export const UsersService = {
 //post(user)
     async createUser(login: string,password: string, email: string ): Promise<UsersInputType> {
 
-        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordSalt = await bcrypt.genSalt(3)
         const passwordHash = await this._generateHash(password, passwordSalt)
         let newUser: createUserAccountThroughAuth = {
             id: new ObjectId().toString(),
@@ -25,7 +26,7 @@ export const UsersService = {
             },
             emailConfirmation:{
                 confirmationCode: uuidv4(),
-                expirationDate: add(new Date(),{hours:48}),//дата истечения срока
+                expirationDate: add(new Date(),{hours:48}).toISOString(),//дата истечения срока
                 isConfirmed: false
             }
 
@@ -84,4 +85,8 @@ export const UsersService = {
     async findUserByLogin(login:string){
         return   await UsersRepository.findUserByLogin(login)
     }
+}
+
+function _generateHash(email: string): string {
+    throw new Error("Function not implemented.");
 }
