@@ -10,7 +10,7 @@ export const authTokenMiddleware = async (req: Request, res: Response, next: Nex
     }
     const token = req.headers.authorization.split(' ')[1]// "bearer dgsdsdddgsdgddsgdgsdgdgsdgsdgsgdgsd"
 
-    const userId = await JwtService.getUserIdByToken(token)
+    const userId = await JwtService.getIdFromToken(token)
     // console.log("userId: "+ userId)
     if (userId) {
         req.userId = userId.toHexString()

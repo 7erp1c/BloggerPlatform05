@@ -7,7 +7,7 @@ import {CommentViewOutput} from "../../model/commentsType/commentsView";
 
 export const CommentsService = {
     async createComments(content: string, foundPostId: string, token: string): Promise<CommentViewOutput> {
-        const userId = await JwtService.getUserIdByToken(token);
+        const userId = await JwtService.getIdFromToken(token);
         const id = userId ? userId.toHexString() : null;
         const user = await UsersService.findUserById(id)
 

@@ -45,8 +45,8 @@ commentsRouter
         // if (!req.headers.authorization) {
         //     return res.status(401).send('Unauthorized');
         // }
-        // const token = req.headers.authorization?.split(' ')[1];
-        // const transformationId = await JwtService.getUserIdByToken(token);
+        // const old-token = req.headers.authorization?.split(' ')[1];
+        // const transformationId = await JwtService.getUserIdByToken(old-token);
         // const userId = transformationId ? transformationId.toHexString() : null;
         // const searchUser = await UsersService.findUserById(userId);
         const user = req.userId

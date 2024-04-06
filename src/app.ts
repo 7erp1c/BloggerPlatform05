@@ -5,9 +5,11 @@ import {usersRouter} from "./router/users-router";
 import { db} from './db/mongo-db';
 import { authRouter } from './router/auth-router';
 import {commentsRouter} from "./router/comments/comments-router";
+import cookieParser from "cookie-parser";
 export const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)

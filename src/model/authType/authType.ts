@@ -12,3 +12,11 @@ export type getAuthType = {
     login: string ,
     userId: string
 }
+export type accessTokenAndRefreshToken= {
+    accessToken: string
+    refreshToken: string
+}
+ export interface OldTokenDB {
+    oldToken: string,
+    isValid: boolean
+}

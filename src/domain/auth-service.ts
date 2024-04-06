@@ -5,6 +5,9 @@ import {UsersRepository} from "../repositories/usersRepository";
 
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
+import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
+import jwt from "jsonwebtoken";
+import {JwtService} from "../application/jwt-service";
 
 export const AuthService = {
     async createUser(login: string, password: string, email: string): Promise<UsersInputType | null> {
@@ -24,50 +27,62 @@ export const AuthService = {
     },
 
     async confirmCode(code: string): Promise<{ status: boolean, message: string }> {
-        //console.log("*****!!!!confirmCode code:   " + code)
-        //const receiptedCode = await this._confirmationCodeToData(code)
-        //if (!receiptedCode) return { status: false, message: `codeparsing error code: ${receiptedCode}, initial code : ${code}`} ;
-        //console.log("*****!!!!!!!receiptedCode: " + receiptedCode.confirmationCode + "  " + receiptedCode.userEmail + " " + receiptedCode.expirationDate)
-        //let user = await UsersRepository.findUserByEmail(receiptedCode.userEmail)
-        let user = await UsersRepository.findUserByCode(code)
-        //если не user, уже подтвердил и т.д.
-        if (!user) return { status: false, message: `no user in db user: ${user}`} ;
-        //console.log("!!!!!!!user: " + user)
-        if (user.emailConfirmation?.isConfirmed) return { status: false, message: `user is confirmed user: ${user}`} ;
-        // console.log("CODE1      :"  + receiptedCode.confirmationCode)
-        // console.log("CODE2      :"  + user.emailConfirmation?.confirmationCode)
 
-        if (code !== user.emailConfirmation?.confirmationCode) return { status: false, message: `code from front differs from code in db codes : ${code} ,${ user.emailConfirmation?.confirmationCode }`} ;
-        if (user.emailConfirmation.expirationDate < new Date().toISOString()) return { status: false, message: `date compare failed : ${new Date().toISOString()}, ${user.emailConfirmation.expirationDate}`};
-        //console.log("!!!!!!!receiptedCode: " + user.emailConfirmation.confirmationCode + " !!!  " + user.accountData.email + " !!! " + user.accountData.email)
-        //const sendEmail = await EmailsManager.sendMessageWitchConfirmationCode(user.accountData.email, user.accountData.login, user.emailConfirmation.confirmationCode)
+        let user = await UsersRepository.findUserByCode(code)
+
+        if (!user) return {status: false, message: `no user in db user: ${user}`};
+        if (user.emailConfirmation?.isConfirmed) return {status: false, message: `user is confirmed user: ${user}`};
+        if (code !== user.emailConfirmation?.confirmationCode) return {
+            status: false,
+            message: `code from front differs from code in db codes : ${code} ,${user.emailConfirmation?.confirmationCode}`
+        };
+        if (user.emailConfirmation.expirationDate < new Date().toISOString()) return {
+            status: false,
+            message: `date compare failed : ${new Date().toISOString()}, ${user.emailConfirmation.expirationDate}`
+        };
+
         await UsersRepository.updateConfirmation(user.id)
-        return   { status: true, message: ``}
+        return {status: true, message: ``}
 
     },
 
     async confirmEmail(email: string): Promise<boolean> {
-        //create code:
-        //const newConfirmationCode = await this._createConfirmationCode(email);
+
         const newConfirmationCode = uuidv4()
-        const newDate = add(new Date(),{hours:48}).toISOString()
-        console.log("newConfirmationCode:  COPY  " + newConfirmationCode)
-        //console.log("newConfirmationCode: " + newConfirmationCode)
-        //update code:
-        //const newCodeAndDDate = await this._confirmationCodeToData(newConfirmationCode)
-        //if(!newCodeAndDDate)return false
+        const newDate = add(new Date(), {hours: 48}).toISOString()
+
         const isUserUpdated = await UsersRepository.updateUserEmailConfirmationCode(email, newConfirmationCode, newDate)
-        //console.log("isUserUpdated: " + isUserUpdated)
         if (!isUserUpdated) return false;
-        //send user:
+
         let user = await UsersService.findUserByEmail(email)
-        //console.log("user: " + user)
-        //если не user, уже подтвердил и т.д.
         if (!user) return false
-        //send message:
+
         const sendEmail = await EmailsManager
             .sendMessageWitchConfirmationCode(user.accountData.email, user.accountData.login, user.emailConfirmation!.confirmationCode)
         return true
+    },
+
+    async refreshToken(oldToken: string) {
+        const checkToken = await RefreshTokenRepository.checkToken(oldToken);
+        if (!checkToken) {
+            return null
+         }
+        return checkToken
+
+
+
+// const newAccessAndRefreshToken = JwtService.createJWT()
+//         try {
+//             const result:any = jwt.verify(oldToken, process.env.);
+//
+//             const accessToken = this._createNewAccessToken(result.userId);
+//             const refreshToken = this._createNewRefreshToken(result.userId);
+//             return {accessToken: accessToken, refreshToken: refreshToken}
+//         }catch (err){
+//             return null
+//         }
+
+
     },
 //________________________________Additionally:
 
