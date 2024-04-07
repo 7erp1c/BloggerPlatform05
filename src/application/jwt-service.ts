@@ -20,17 +20,17 @@ export const JwtService = {
 
     async createJWT(user:createUserAccountThroughAuth) {
         return jwt
-            .sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '10s'})
+            .sign({userId: user.id/*,valid: true*/}, settings.JWT_SECRET, {expiresIn: '10s'})
     },
     async createJWTRefresh(user:createUserAccountThroughAuth) {
         return jwt
-            .sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '20s'})
+            .sign({userId: user.id/*, valid: true*/}, settings.JWT_SECRET, {expiresIn: '20s'})
     },
 
     async getIdFromToken(token:string){
         try{ //достаём из token userId
             const result: any = jwt.verify(token,settings.JWT_SECRET)
-            return new ObjectId(result.userId)
+            return (new ObjectId((result.userId))).toString()
 
         }catch (error){
             return null

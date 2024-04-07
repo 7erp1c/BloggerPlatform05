@@ -1,15 +1,18 @@
 import {ObjectId} from "mongodb";
 import {JwtService} from "../../application/jwt-service";
-import {UsersService} from "../users-service";
 import {CommentsRepositories} from "../../repositories/comments/commentsRepository";
 import {CommentViewOutput} from "../../model/commentsType/commentsView";
+import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repository";
 
 
 export const CommentsService = {
     async createComments(content: string, foundPostId: string, token: string): Promise<CommentViewOutput> {
         const userId = await JwtService.getIdFromToken(token);
-        const id = userId ? userId.toHexString() : null;
-        const user = await UsersService.findUserById(id)
+        if(!userId){
+            throw new Error("message: CommentsService, createComments, not userId")
+        }
+
+        const user = await UsersQueryRepository.findUserById(userId)
 
         let newComment = {
             id: new ObjectId().toString(),

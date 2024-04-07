@@ -76,9 +76,6 @@ export const UsersService = {
         return await UsersRepository.deleteUser(id)
     },
 //get(id)
-    async findUserById(id:any){
-        return await UsersRepository.findUserById(id)
-    },
     async findUserByEmail(email:string){
       return   await UsersRepository.findUserByEmail(email)
     },

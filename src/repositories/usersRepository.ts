@@ -29,10 +29,7 @@ export const UsersRepository = {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
-    async findUserById(id: string) {
-        return await usersCollection.findOne({id}, {projection: {_id: 0}})
 
-    },
     async updateConfirmation(id: string) {
         let result = await usersCollection
             .updateOne({id}, {$set: {'emailConfirmation.isConfirmed': true}})

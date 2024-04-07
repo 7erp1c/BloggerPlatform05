@@ -2,12 +2,10 @@ import {EmailsManager} from "../managers/email-manager";
 import {UsersService} from "./users-service";
 import {UsersInputType} from "../model/usersType/inputModelTypeUsers";
 import {UsersRepository} from "../repositories/usersRepository";
-
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
-import jwt from "jsonwebtoken";
-import {JwtService} from "../application/jwt-service";
+import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 
 export const AuthService = {
     async createUser(login: string, password: string, email: string): Promise<UsersInputType | null> {
@@ -15,7 +13,7 @@ export const AuthService = {
         if (!user) {
             return null
         }
-        const findUser = await UsersService.findUserById(user.id)
+        const findUser = await UsersQueryRepository.findUserById(user.id)
 
         if (!findUser || !findUser.emailConfirmation) {
             return null
