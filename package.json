@@ -17,6 +17,11 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test:e2e": "jest --config jest-e2e.json --runInBand --detectOpenHandles --forceExit",
+    "test:integration": "jest --config jest-integration.json --runInBand --detectOpenHandles --forceExit",
+    "coverage": "jest --coverage",
     "watch": "tsc -w",
     "dev": "yarn nodemon --inspect dist/index.js",
     "jest": "jest -i"

@@ -17,6 +17,7 @@ import {settings} from "../setting";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 import {ObjectId} from "mongodb";
+import {refreshTokenCollection} from "../db/mongo-db";
 
 
 export const authRouter = Router({})
@@ -33,6 +34,8 @@ authRouter
 
         const token = await JwtService.createJWT(user)// создаем токен для Authorisation
         const tokenRefresh = await JwtService.createJWTRefresh(user)//создаем токен для Cookies
+        //
+        const allUpdate = await refreshTokenCollection.updateMany({}, { $set: { isValid: false } });
 
         const addRefreshTokenToDB = await JwtService.addTokenInDB(tokenRefresh)//добавляем cookies Token в DB
         if(!addRefreshTokenToDB){
@@ -47,10 +50,14 @@ authRouter
     })
 
     .post('/refresh-token',async(req:Request,res: Response)=>{
-        console.log("cookies: " + req.cookies.refreshToken)
         const {refreshToken} = req.cookies
         if(!refreshToken) {
             return res.status(401).send('JWT refreshToken has expired 1')
+        }
+
+        const refreshTokenStatusValidBeginning = await RefreshTokenRepository.invalidateToken(refreshToken)
+        if(!refreshTokenStatusValidBeginning){
+            return res.status(401).send('the token is invalid 1')
         }
         //проверяем токен протух, id и т.д.
         const userId = await JwtService.getIdFromToken(refreshToken)//проверяем токен
@@ -58,16 +65,15 @@ authRouter
             const upTokenValid = await RefreshTokenRepository.updateRefreshValid(refreshToken)
             return res.status(401).send('Unauthorized 1');
         }
-        // const id = userId.toHexString()
-         console.log("id: " + userId)
-        //Обновляем статус валидности актуального refresh token
+
+       // Обновляем статус валидности актуального refresh token
         const upTokenValid = await RefreshTokenRepository.updateRefreshValid(refreshToken)
         if(!upTokenValid){
             return res.status(401).send('the token not update valid')
         }
+
         //проверка Инвалидация предыдущего refresh token
         const refreshTokenStatusValid = await RefreshTokenRepository.invalidateToken(refreshToken)
-        console.log("VALID: " + refreshTokenStatusValid)
         if(refreshTokenStatusValid){
             const upTokenValid = await RefreshTokenRepository.updateRefreshValid(refreshToken)
             return res.status(401).send('The token is no longer valid')
@@ -82,6 +88,7 @@ authRouter
        // res.clearCookie('refreshToken');
         const  accessToken = await JwtService.createJWT(user)// создаем токен для Authorisation
         const tokenRefresh = await JwtService.createJWTRefresh(user)//создаем токен для Cookies
+
         const addRefreshTokenToDB = await JwtService.addTokenInDB(tokenRefresh)//добавляем cookies Token в DB
         if(!addRefreshTokenToDB){
             return res.status(500).send({message: {error:"Failed to add a token to the database"}})
@@ -92,6 +99,7 @@ authRouter
         return res.status(200).send({
             "accessToken": accessToken
         })
+
     })
 
     //регистрация и подтверждение
@@ -164,38 +172,26 @@ authRouter
             return res.status(401).send('the token is invalid')
         }
 
-        //update oldRefreshToken
-        const upTokenValid = await RefreshTokenRepository.updateRefreshValid(refreshToken)
-        if(!upTokenValid){
-            res.status(401).send('the token is valid 2')
-        }
-        //
-        // const invalidateRefreshToken = await RefreshTokenRepository.invalidateToken(refreshToken);
-        //  if (!invalidateRefreshToken){
-        //      return res.status(401).send("token is valid 3")
-        //  }
-        res.clearCookie('refreshToken');
-
+        const allDelete = await refreshTokenCollection.deleteMany({})
         return res.sendStatus(204);
-
     })
 
     .get('/me', authTokenMiddleware, async (req: Request, res: Response) => {
 
         if (!req.headers.authorization) {
-            return res.status(401).send('Unauthorized');
+            return res.status(401).send('Unauthorized 1');
         }
         const token = req.headers.authorization?.split(' ')[1];
 
 
         const userId = await JwtService.getIdFromToken(token);
         if (!userId) {
-            return res.status(401).send('Unauthorized');
+            return res.status(401).send('Unauthorized 2');
         }
 
         const user = await UsersQueryRepository.findUserById(userId);
         if (!user) {
-            return res.status(401).send('Unauthorized');
+            return res.status(401).send('Unauthorized 3');
         }
 
         const responseData: getAuthType = {
