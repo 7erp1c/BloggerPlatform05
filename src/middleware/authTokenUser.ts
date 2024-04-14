@@ -1,6 +1,9 @@
 import {Request, Response, NextFunction} from "express";
 import {JwtService} from "../application/jwt-service";
-import {UsersService} from "../domain/users-service";
+import {Result} from "../model/result.type";
+
+
+
 
 
 export const authTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {

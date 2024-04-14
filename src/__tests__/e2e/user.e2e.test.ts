@@ -1,6 +1,6 @@
 import request = require("supertest");
-import {app} from "../../src/app";
-import {usersRouter} from "../../src/router/users-router";
+import {app} from "../../app";
+
 
 const routerName = "/users/";
 

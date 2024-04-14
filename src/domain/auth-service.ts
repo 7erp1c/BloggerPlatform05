@@ -7,6 +7,8 @@ import {add} from "date-fns";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 import {JwtService} from "../application/jwt-service";
+import {CommentsRepositories} from "../repositories/comments/commentsRepository";
+import {ResultStatus} from "../_util/enum";
 
 export const AuthService = {
 
@@ -46,20 +48,20 @@ export const AuthService = {
 
     },
 
-    async confirmEmail(email: string): Promise<boolean> {
+    async confirmEmail(email: string): Promise<{ status: boolean, message: string }>{
 
         const newConfirmationCode = uuidv4()
         const newDate = add(new Date(), {hours: 48}).toISOString()
 
         const isUserUpdated = await UsersRepository.updateUserEmailConfirmationCode(email, newConfirmationCode, newDate)
-        if (!isUserUpdated) return false;
+        if (!isUserUpdated) return {status: false, message: `user is confirmed user: ${isUserUpdated}`};
 
-        let user = await UsersService.findUserByEmail(email)
-        if (!user) return false
+        let user = await UsersQueryRepository.findUserByEmail(email)
+        if (!user) return {status: false, message: `user is confirmed user: ${user}`};
 
         const sendEmail = await EmailsManager
             .sendMessageWitchConfirmationCode(user.accountData.email, user.accountData.login, user.emailConfirmation!.confirmationCode)
-        return true
+        return {status: true, message: ``}
     },
 
     async refreshToken(oldToken: string) {
@@ -68,5 +70,38 @@ export const AuthService = {
             return null
         }
         return checkToken
-    }
+    },
+    async inspectToken(token:string){
+
+    },
+
+    // async removeAuth(loginOrEmail:string,password:string){
+    //     const comment = await CommentsRepositories.allComments(id)
+    //
+    //     if(!comment) return {
+    //         status: ResultStatuses.NotFound,
+    //         errorMessage: 'Comment not found',
+    //         data: null,
+    //     }
+    //
+    //     if(comment.commentatorInfo.userId !== userId) return {
+    //         status: ResultStatuses.Forbidden,
+    //         errorMessage: 'Comment is not in our own',
+    //         data: null,
+    //     }
+    //
+    //     const isDeleted =  await CommentsRepositories.deleteComments(id);
+    //
+    //     if(!isDeleted) return {
+    //         status: ResultStatuses.NotFound,
+    //         errorMessage: 'Comment not found',
+    //         data: null,
+    //     }
+    //
+    //     return {
+    //         status: ResultStatuses.Success,
+    //         data: null,
+    //     }
+    //
+    // }
 }

@@ -4,6 +4,7 @@ import {settings} from "../setting";
 import {ObjectId} from "mongodb";
 import {OldTokenDB} from "../model/authType/authType";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
+import {refreshTokenCollection} from "../db/mongo-db";
 
 
 
@@ -35,6 +36,10 @@ export const JwtService = {
         }catch (error){
             return null
         }
+    },
+    async updateDBJWT(){
+        const allUpdateOldRefreshJWT = await refreshTokenCollection.updateMany({}, { $set: { isValid: false } });
+
     }
 
 

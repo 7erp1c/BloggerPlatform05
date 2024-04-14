@@ -56,6 +56,9 @@ export const UsersQueryRepository = {
         return await usersCollection.findOne({id}, {projection: {_id: 0}})
 
     },
+    async findUserByEmail(email: string) {
+        return await usersCollection.findOne({"accountData.email": email}, {projection: {_id: 0}})
+    },
 
 
 }

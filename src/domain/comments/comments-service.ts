@@ -3,6 +3,7 @@ import {JwtService} from "../../application/jwt-service";
 import {CommentsRepositories} from "../../repositories/comments/commentsRepository";
 import {CommentViewOutput} from "../../model/commentsType/commentsView";
 import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repository";
+import {ResultStatus} from "../../_util/enum";
 
 
 export const CommentsService = {
@@ -47,6 +48,36 @@ export const CommentsService = {
 
     async updateComment(commentId:string,content:string){
         return await CommentsRepositories.updateComment(commentId,content)
+    },
+
+    async removeComment(id: string, userId: string){
+        const comment = await CommentsRepositories.allComments(id)
+
+        if(!comment) return {
+            status: ResultStatus.NotFound,
+            errorMessage: 'Comment not found',
+            data: null,
+        }
+
+        if(comment.commentatorInfo.userId !== userId) return {
+            status: ResultStatus.Forbidden,
+            errorMessage: 'Comment is not in our own',
+            data: null,
+        }
+
+       const isDeleted =  await CommentsRepositories.deleteComments(id);
+
+        if(!isDeleted) return {
+            status: ResultStatus.NotFound,
+            errorMessage: 'Comment not found',
+            data: null,
+        }
+
+        return {
+            status: ResultStatus.Success,
+            data: null,
+        }
+
     }
 
 }

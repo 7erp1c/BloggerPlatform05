@@ -18,7 +18,7 @@ if(!mongoURI){
 export const client: MongoClient = new MongoClient(mongoURI)
 
 
-export let db = client.db();
+export let db = client.db("db");
 export const blogCollection: Collection<blogsView> = db.collection<blogsView>("blogs")
 export const postCollection: Collection<PostsView> = db.collection<PostsView>("posts")
 export const usersCollection: Collection<createUserAccountThroughAuth> = db.collection<createUserAccountThroughAuth>("users")

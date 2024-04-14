@@ -15,9 +15,6 @@ export const UsersRepository = {
             .findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
 
     },
-    async findUserByEmail(email: string) {
-        return await usersCollection.findOne({"accountData.email": email})
-    },
     async findUserByCode(code: string) {
         return await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
     },

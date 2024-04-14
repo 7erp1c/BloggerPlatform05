@@ -5,6 +5,10 @@ import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
 import {AuthService} from "./auth-service";
+import {ResultStatus} from "../_util/enum";
+import {JwtService} from "../application/jwt-service";
+import {refreshTokenCollection} from "../db/mongo-db";
+import {Result} from "../model/result.type";
 
 
 
@@ -42,24 +46,39 @@ export const UsersService = {
 
     },
 
-    async checkCredentials(loginOrEmail:string, password:string) {
+    async checkCredentials(loginOrEmail:string, password:string):Promise<Result<createUserAccountThroughAuth| null>> {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
 
-        if (!user) {
-            return false
-        }
+        // if (!user) {
+        //     return false
+        // }
         // if(!user.emailConfirmation?.isConfirmed){
         //     return null
         // }
-        if(!user.accountData.passwordSalt){
-            return false
+        // if(!user.accountData.passwordSalt){
+        //     return false
+        // }
+
+        if(!user||!user.accountData.passwordSalt) return {
+            status: ResultStatus.Unauthorized,
+            errorMessage: 'User was not found by email and login',
+            data: null,
         }
         const passwordHash = await this._generateHash(password, user.accountData.passwordSalt)
-        if(user.accountData.passwordHash === passwordHash){
-            return user
-        }else{
-            return null
+        if(user.accountData.passwordHash !== passwordHash)return{
+            status: ResultStatus.Unauthorized,
+            errorMessage: 'User passwordHash not found',
+            data: null,
         }
+        const token     = await JwtService.createJWT(user)// создаем токен для Authorisation
+        const tokenRefresh = await JwtService.createJWTRefresh(user)//создаем токен для Cookies
+
+        return{
+            status: ResultStatus.Success,
+            data: user
+        }
+
+
 
 
     },
@@ -76,14 +95,10 @@ export const UsersService = {
         return await UsersRepository.deleteUser(id)
     },
 //get(id)
-    async findUserByEmail(email:string){
-      return   await UsersRepository.findUserByEmail(email)
-    },
+
     async findUserByLogin(login:string){
         return   await UsersRepository.findUserByLogin(login)
-    }
+    },
+
 }
 
-function _generateHash(email: string): string {
-    throw new Error("Function not implemented.");
-}

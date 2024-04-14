@@ -3,6 +3,7 @@ import {blogCollection} from "../db/mongo-db";
 import {UsersService} from "../domain/users-service";
 import {AuthService} from "../domain/auth-service";
 import {UsersRepository} from "../repositories/usersRepository";
+import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 
 export const blogsValidation = [
     body('name').trim().isString().isLength({min: 1, max: 15}),
@@ -44,7 +45,7 @@ export const usersValidation = [
     body('email').trim().isString()
         .matches(new RegExp("^[\\w\\.\\-]+@[\\w\\.\\-]+\\.[a-zA-Z]{2,4}$"))
         .custom(async (value) => {
-            const findUserByEmail = await UsersService.findUserByEmail(value)
+            const findUserByEmail = await UsersQueryRepository.findUserByEmail(value)
             if (!findUserByEmail) {
                 return value
             }
@@ -61,7 +62,7 @@ export const authValidation = [
 export const authEmailValidation = [
     body('email')
         .custom(async (value) => {
-            const user = await UsersService.findUserByEmail(value)
+            const user = await UsersQueryRepository.findUserByEmail(value)
             if (!user||user.emailConfirmation?.isConfirmed) {
                 throw new Error("User not found");
             }

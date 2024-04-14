@@ -5,8 +5,6 @@ import {RequestWithDelete} from "../../typeForReqRes/helperTypeForReq";
 import {_delete_all_} from "../../typeForReqRes/blogsCreateAndPutModel";
 import {commentValidation} from "../../middleware/inputValidationMiddleware";
 import {errorsValidation} from "../../middleware/errorsValidation";
-import {JwtService} from "../../application/jwt-service";
-import {UsersService} from "../../domain/users-service";
 
 
 export const commentsRouter = Router({})
@@ -70,6 +68,12 @@ commentsRouter
             return
         }
         return res.sendStatus(204);
+
+//Применить ко всему
+//         const result = await CommentsService.removeComment(id, user as string);
+//
+//         if(result.status === ResultStatuses.Success) return res.sendStatus(204);
+//         if(result.status === ResultStatuses.Forbbiden) return res.status(403).send(result.errorMessage!)
     })
 
     .get('/:id', async (req, res) => {

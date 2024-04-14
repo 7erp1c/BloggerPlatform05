@@ -6,6 +6,7 @@
   "author": "7erp1c <ul_tray@bk.ru>",
   "license": "MIT",
   "dependencies": {
+    "@types/mongodb-memory-server": "^2.3.0",
     "base-64": "^1.0.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
@@ -13,18 +14,14 @@
     "express-jwt": "^8.4.1",
     "express-validator": "^7.0.1",
     "mongodb": "^6.5.0",
+    "mongodb-memory-server": "^9.1.8",
     "nodemailer": "^6.9.13",
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test:e2e": "jest --config jest-e2e.json --runInBand --detectOpenHandles --forceExit",
-    "test:integration": "jest --config jest-integration.json --runInBand --detectOpenHandles --forceExit",
-    "coverage": "jest --coverage",
     "watch": "tsc -w",
     "dev": "yarn nodemon --inspect dist/index.js",
-    "jest": "jest -i"
+    "jest": "jest -i "
   },
   "devDependencies": {
     "@types/base-64": "^1.0.2",

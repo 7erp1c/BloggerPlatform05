@@ -1,6 +1,8 @@
-//import request from 'supertest';
-import request = require("supertest");
-import {app} from "../../src/app";
+import request from 'supertest';
+import {app} from "../../app";
+
+
+
 
 
 
@@ -44,7 +46,7 @@ const emptyBody = {
 
 }
 
-describe(routerName, () => {
+describe("PostTest", () => {
     // clear DB before testing
     beforeAll(async () => {
         await request(app).delete("/testing/all-data");
