@@ -2,6 +2,8 @@ import request from "supertest"
 import {client, db, usersCollection} from "../../db/mongo-db";
 import {app} from "../../app";
 import {resolveObjectURL} from "node:buffer";
+import {AuthService} from "../../domain/auth-service";
+import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repository";
 
 
 const routerName = '/auth/'
@@ -48,6 +50,7 @@ describe("AuthTest", () => {
     })
     describe('registration', () => {
         let firstCode: string | undefined;
+        let firstCode2: string | undefined;
         let secondCode: string | undefined;
 
         it("registration - email ", async () => {
@@ -72,23 +75,24 @@ describe("AuthTest", () => {
             //         code: secondCode
             //     }).expect(204)
         })
-        it("Resending the code", async () => {
-            await request(app)
-                .post("/auth/registration-confirmation")
-                .send({code: firstCode})
-                .expect(204)
-
-
-        })
-        it("POST creating a user with the help of an admin", async () => {
-            await request(app)
-                .post("/auth/login")
+        //Регистрация второго User
+        it("registration - email ", async () => {
+            // Регистрация и создание user
+            const registration = await request(app).post(routerName + "registration")
                 .send({
-                    loginOrEmail: "ul_tray@bk.ru",
-                    password: "qwerty123"
-                })
-                .expect(200)
+                    "login": "47aKCJ",
+                    "password": "qwerty123",
+                    "email": "ul_tray2@bk.ru"
+                }).expect(204)
+            console.log(registration.body)
+            const email = "ul_tray2@bk.ru"
+
+            const user = (await UsersQueryRepository.findUserByEmail(email))
+            firstCode2 = user?.emailConfirmation?.confirmationCode
+            console.log("FIRST CODE " + firstCode2)
+
         })
+        //повторная отправка повторного кода в письме на 1ого User
         it("resending an email", async () => {
             await request(app)
                 .post("/auth/registration-email-resending")
@@ -101,6 +105,45 @@ describe("AuthTest", () => {
             expect(firstCode).not.toEqual(secondCode)
 
         })
+        //подтверждение второго user
+        it("Resending the code", async () => {
+            await request(app)
+                .post("/auth/registration-confirmation")
+                .send({code: firstCode2})
+                .expect(204)
+
+
+        })
+        //повторная отправка  кода в письме на 2ого User, он уже подтвержден
+        it("resending an email should return an error, the user2 is confirmed", async () => {
+            await request(app)
+                .post("/auth/registration-email-resending")
+                .send({
+                    "email": "ul_tray2@bk.ru"
+                })
+                .expect(400)
+
+        })
+        //повторное подтверждение второго юзера
+        it("repeated confirmation of the second user should return an error", async () => {
+            await request(app)
+                .post("/auth/registration-confirmation")
+                .send({code: firstCode2})
+                .expect(400)
+
+
+        })
+        //проверяем что приложуха не упала
+        it("POST creating a user with the help of an admin", async () => {
+            await request(app)
+                .post("/auth/login")
+                .send({
+                    loginOrEmail: "ul_tray@bk.ru",
+                    password: "qwerty123"
+                })
+                .expect(200)
+        })
+
     })
 
 //по 08 домашке
@@ -140,6 +183,7 @@ describe("AuthTest", () => {
             console.log("__ACCESSTOKEN: " + testAccessToken1)
             // Проверка, что refreshToken добавлен в куки
             const cookiesArray1 = authLogin.header["set-cookie"];
+            console.log("___________" + cookiesArray1[0],cookiesArray1[1])
 
             // Поиск refreshToken в куках
             for (let cookie1 of cookiesArray1) {
@@ -173,6 +217,7 @@ describe("AuthTest", () => {
                 }
             }
             console.log("__test refreshToken2: " + testRefreshToken2)
+            expect(testRefreshToken1).not.toEqual(testRefreshToken2)
             expect(testRefreshToken2).toBeDefined();
         })
         it("Should not logout on the first rotten token", async () => {

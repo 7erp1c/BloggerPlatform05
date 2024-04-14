@@ -6,3 +6,5 @@ export type Result<T = null> = {
     extensions?: [{ field: 'id', message: '' }]
     data: T
 }
+
+export type ResultOrVoid = void | Result<null>

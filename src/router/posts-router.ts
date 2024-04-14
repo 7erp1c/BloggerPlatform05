@@ -18,7 +18,7 @@ import {errorsValidation} from "../middleware/errorsValidation";
 import {QueryBlogRequestType} from "../model/blogsType/blogsView";
 import {QueryPostRequestType, SortPostRepositoryType} from "../model/postsType/postsView";
 import {PostsQueryRepository} from "../repositoriesQuery/posts-query-repository";
-import {authTokenMiddleware} from "../middleware/authTokenUser";
+import {authTokenMiddleware} from "../middleware/authMiddleware/authTokenUser";
 import {CommentsService} from "../domain/comments/comments-service";
 import {CommentsQueryRepository} from "../repositoriesQuery/comments-query-repository";
 import {QueryCommentsRequestType, SortCommentsRepositoryType} from "../model/commentsType/commentsView";

@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
-import {JwtService} from "../application/jwt-service";
-import {Result} from "../model/result.type";
+import {JwtService} from "../../application/jwt-service";
+import {Result} from "../../model/result.type";
 
 
 
@@ -11,7 +11,7 @@ export const authTokenMiddleware = async (req: Request, res: Response, next: Nex
         res.sendStatus(401)
         return
     }
-    const token = req.headers.authorization.split(' ')[1]// "bearer dgsdsdddgsdgddsgdgsdgdgsdgsdgsgdgsd"
+    const token = req.headers.authorization?.split(' ')[1]// "bearer dgsdsdddgsdgddsgdgsdgdgsdgsdgsgdgsd"
 
     const userId = await JwtService.getIdFromToken(token)
     // console.log("userId: "+ userId)

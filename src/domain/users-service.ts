@@ -49,16 +49,6 @@ export const UsersService = {
     async checkCredentials(loginOrEmail:string, password:string):Promise<Result<createUserAccountThroughAuth| null>> {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
 
-        // if (!user) {
-        //     return false
-        // }
-        // if(!user.emailConfirmation?.isConfirmed){
-        //     return null
-        // }
-        // if(!user.accountData.passwordSalt){
-        //     return false
-        // }
-
         if(!user||!user.accountData.passwordSalt) return {
             status: ResultStatus.Unauthorized,
             errorMessage: 'User was not found by email and login',
@@ -70,8 +60,6 @@ export const UsersService = {
             errorMessage: 'User passwordHash not found',
             data: null,
         }
-        const token     = await JwtService.createJWT(user)// создаем токен для Authorisation
-        const tokenRefresh = await JwtService.createJWTRefresh(user)//создаем токен для Cookies
 
         return{
             status: ResultStatus.Success,

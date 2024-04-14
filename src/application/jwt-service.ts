@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
 import {settings} from "../setting";
 import {ObjectId} from "mongodb";
-import {OldTokenDB} from "../model/authType/authType";
+import {getAuthTypeEndpointMe, OldTokenDB} from "../model/authType/authType";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {refreshTokenCollection} from "../db/mongo-db";
 
@@ -19,16 +19,17 @@ export const JwtService = {
         return true
     },
 
-    async createJWT(user:createUserAccountThroughAuth) {
+    async createJWT(id: string) {
         return jwt
-            .sign({userId: user.id/*,valid: true*/}, settings.JWT_SECRET, {expiresIn: '10s'})
+            .sign({userId: id/*,valid: true*/}, settings.JWT_SECRET, {expiresIn: '10s'})
     },
-    async createJWTRefresh(user:createUserAccountThroughAuth) {
+    async createJWTRefresh(id: string) {
         return jwt
-            .sign({userId: user.id/*, valid: true*/}, settings.JWT_SECRET, {expiresIn: '20s'})
+            .sign({userId: id/*, valid: true*/}, settings.JWT_SECRET, {expiresIn: '20s'})
     },
 
     async getIdFromToken(token:string){
+        console.log("getIdFromToken(token:string)______" + token)
         try{ //достаём из token userId
             const result: any = jwt.verify(token,settings.JWT_SECRET)
             return (new ObjectId((result.userId))).toString()

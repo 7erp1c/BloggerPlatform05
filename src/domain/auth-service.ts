@@ -6,9 +6,7 @@ import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
-import {JwtService} from "../application/jwt-service";
-import {CommentsRepositories} from "../repositories/comments/commentsRepository";
-import {ResultStatus} from "../_util/enum";
+
 
 export const AuthService = {
 
@@ -17,14 +15,14 @@ export const AuthService = {
         if (!user) {
             return null
         }
-        const findUser = await UsersQueryRepository.findUserById(user.id)
+        const findUser = await UsersQueryRepository.findUserByIdAllModel(user.id)
 
-        if (!findUser || !findUser.emailConfirmation) {
+        if (!findUser || !findUser.data?.emailConfirmation) {
             return null
         }
-        console.log(findUser.accountData.email + findUser.accountData.login + findUser.emailConfirmation.confirmationCode)
+
         const sendEmail = await EmailsManager
-            .sendMessageWitchConfirmationCode(findUser.accountData.email, findUser.accountData.login, findUser.emailConfirmation.confirmationCode)
+            .sendMessageWitchConfirmationCode(findUser.data.accountData.email, findUser.data.accountData.login, findUser.data.emailConfirmation.confirmationCode)
         return user
     },
 
@@ -70,38 +68,5 @@ export const AuthService = {
             return null
         }
         return checkToken
-    },
-    async inspectToken(token:string){
-
-    },
-
-    // async removeAuth(loginOrEmail:string,password:string){
-    //     const comment = await CommentsRepositories.allComments(id)
-    //
-    //     if(!comment) return {
-    //         status: ResultStatuses.NotFound,
-    //         errorMessage: 'Comment not found',
-    //         data: null,
-    //     }
-    //
-    //     if(comment.commentatorInfo.userId !== userId) return {
-    //         status: ResultStatuses.Forbidden,
-    //         errorMessage: 'Comment is not in our own',
-    //         data: null,
-    //     }
-    //
-    //     const isDeleted =  await CommentsRepositories.deleteComments(id);
-    //
-    //     if(!isDeleted) return {
-    //         status: ResultStatuses.NotFound,
-    //         errorMessage: 'Comment not found',
-    //         data: null,
-    //     }
-    //
-    //     return {
-    //         status: ResultStatuses.Success,
-    //         data: null,
-    //     }
-    //
-    // }
+    }
 }

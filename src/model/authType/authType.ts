@@ -7,16 +7,17 @@ export type authView = {
     password: string
 }
 
-export type getAuthType = {
-    email: string ,
-    login: string ,
+export type getAuthTypeEndpointMe = {
+    email: string,
+    login: string,
     userId: string
 }
-export type accessTokenAndRefreshToken= {
+export type accessTokenAndRefreshToken = {
     accessToken: string
     refreshToken: string
 }
- export interface OldTokenDB {
+
+export interface OldTokenDB {
     oldToken: string,
     isValid: boolean
 }

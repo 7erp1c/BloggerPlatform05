@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {authTokenMiddleware} from "../../middleware/authTokenUser";
+import {authTokenMiddleware} from "../../middleware/authMiddleware/authTokenUser";
 import {CommentsService} from "../../domain/comments/comments-service";
 import {RequestWithDelete} from "../../typeForReqRes/helperTypeForReq";
 import {_delete_all_} from "../../typeForReqRes/blogsCreateAndPutModel";

@@ -1,4 +1,5 @@
 import {createUserAccountThroughAuth, UsersInputType} from "./inputModelTypeUsers";
+import { getAuthTypeEndpointMe} from "../authType/authType";
 
 
 export const getUsersView = (dbUsers: createUserAccountThroughAuth): UsersInputType => {
@@ -9,5 +10,12 @@ export const getUsersView = (dbUsers: createUserAccountThroughAuth): UsersInputT
         createdAt: dbUsers.accountData.createdAt,
 
 
+    }
+}
+export const getAuthUsersView = (dbAuthUsers: createUserAccountThroughAuth): getAuthTypeEndpointMe => {
+    return {
+        email: dbAuthUsers.accountData.email,
+        login: dbAuthUsers.accountData.login,
+        userId: dbAuthUsers.id,
     }
 }

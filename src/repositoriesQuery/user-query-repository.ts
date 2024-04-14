@@ -7,7 +7,11 @@ import {
     UserViewModelType
 } from "../model/usersType/inputModelTypeUsers";
 import { usersCollection} from "../db/mongo-db";
-import {getUsersView} from "../model/usersType/getUsersView";
+import {getAuthUsersView, getUsersView} from "../model/usersType/getUsersView";
+import {Result} from "../model/result.type";
+import {ResultStatus} from "../_util/enum";
+import {getAuthTypeEndpointMe} from "../model/authType/authType";
+
 
 export const UsersQueryRepository = {
 
@@ -52,8 +56,32 @@ export const UsersQueryRepository = {
                 items: users.map(getUsersView)
             }
         },
-    async findUserById(id: string) {
-        return await usersCollection.findOne({id}, {projection: {_id: 0}})
+    async findUserById(id: string):Promise<Result<getAuthTypeEndpointMe| null>> {
+        const user: createUserAccountThroughAuth[]|null =  await usersCollection.find({id}, {projection: {_id: 0}}).toArray()
+        if(!user) return {
+            status: ResultStatus.Unauthorized,
+            errorMessage: 'User was not found by id',
+            data: null,
+        }
+        const mappedUsers = user.map(getAuthUsersView);
+        return{
+            status: ResultStatus.Success,
+            data: mappedUsers[0]
+        }
+
+    },
+    async findUserByIdAllModel(id: string):Promise<Result<createUserAccountThroughAuth| null>> {
+        const user =  await usersCollection.findOne({id}, {projection: {_id: 0}})
+        if(!user) return {
+            status: ResultStatus.Unauthorized,
+            errorMessage: 'User was not found by id',
+            data: null,
+        }
+
+        return{
+            status: ResultStatus.Success,
+            data: user
+        }
 
     },
     async findUserByEmail(email: string) {
