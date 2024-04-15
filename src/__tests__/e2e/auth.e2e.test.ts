@@ -1,22 +1,28 @@
+//в тесте используется таймер т.к. токены генерятся одинаковые
 import request from "supertest"
-import {client, db, usersCollection} from "../../db/mongo-db";
+import {dbName, usersCollection} from "../../db/mongo-db";
 import {app} from "../../app";
-import {resolveObjectURL} from "node:buffer";
-import {AuthService} from "../../domain/auth-service";
 import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repository";
+import {delay} from "./utils/timer";
+import {CreateUserThroughRegistration} from "./utils/createUser";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import {db} from "./utils/db";
 
 
 const routerName = '/auth/'
 
 describe("AuthTest", () => {
     beforeAll(async () => {
-        await client.connect();
+        const mongoServer = await MongoMemoryServer.create()
+        await db.run(mongoServer.getUri())
+        //await client.connect();
        // await request(app).delete("/testing/all-data")
         // const mongoServer = await MongoMemoryServer.create() //использование локальной базы данных без демона
         // await db.run(mongoServer.getUri()) // поднимет базу данных
     })
     afterAll(async () => {
-        await client.close();
+        await db.drop();
+        //await client.close();
         // await db.stop(); если заюзали MongoMemoryServer
     })
     beforeAll(async () => {
@@ -55,25 +61,13 @@ describe("AuthTest", () => {
 
         it("registration - email ", async () => {
             // Регистрация и создание user
-            const registration = await request(app).post(routerName + "registration")
-                .send({
-                    "login": "_I147aKCJ",
-                    "password": "qwerty123",
-                    "email": "ul_tray@bk.ru"
-                }).expect(204)
+            const registration = await CreateUserThroughRegistration(app)
             console.log(registration.body)
 
             const user = (await usersCollection.find({}).toArray())[0]
             firstCode = user.emailConfirmation?.confirmationCode
             console.log("FIRST CODE " + firstCode)
-            // await request(app).post("/auth/registration-confirmation")
-            //     .send({
-            //         code: firstCode
-            //     }).expect(400)
-            // const registrationConfirm = await request(app).post("/auth/registration-confirmation")
-            //     .send({
-            //         code: secondCode
-            //     }).expect(204)
+
         })
         //Регистрация второго User
         it("registration - email ", async () => {
@@ -197,6 +191,7 @@ describe("AuthTest", () => {
         })
         it("Must receive two pairs of tokens", async () => {
             //обновляем пару accessToken и refreshToken, используем "testRefreshToken1"://____//
+            await delay(200)
             const authRefreshToken = await request(app)
                 .post("/auth/refresh-token")
                 .set("Cookie", testRefreshToken1)
@@ -251,7 +246,7 @@ describe("AuthTest", () => {
                 .post("/auth/logout")
                 .set("Cookie", testRefreshToken2)
                 .expect(204)
-            const collection = db.collection('old-old-token')
+            const collection = dbName.collection('old-old-token')
             const count = await collection.countDocuments();
             // Проверка, что количество документов в коллекции равно 0 (т.е. коллекция пустая)
             expect(count).toBe(0);

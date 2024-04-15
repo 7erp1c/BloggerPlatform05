@@ -15,13 +15,13 @@ export const db = {
 
         return this.client.db(appConfig.DB_NAME)
     },
-    async run(url: string) {
+    async run(url: string) {//метод подключения к db
         try {
-            this.client = new MongoClient(url)
+            this.client = new MongoClient(url)// создаём клиент монго клиент и подкидываем url
 
-            await this.client.connect();
+            await this.client.connect();//конектимся
             console.log('client', this.client)
-            await this.getDbName().command({ping: 1});
+            await this.getDbName().command({ping: 1});//?
             console.log('Connected successfully to mongo server', e)
         } catch (e: unknown) {
             console.error("Can't connect to mongo server", e)
@@ -29,11 +29,11 @@ export const db = {
             await this.client.close();
         }
     },
-    async stop() {
+    async stop() {//метод стоп
         await this.client.close();
         console.log('Connected successfully closed')
     },
-    async drop() {
+    async drop() { //метод берет все коллекции и чистит
         try {
             //await this.getName().dropDatabase()//для использования этого метода, нужны права админа
             const collections = await this.getDbName().listCollections().toArray()//берем все коллекции
@@ -49,7 +49,7 @@ export const db = {
     },
     getCollections(){
         return{
-            commentsCollection:this.getDbName().collection<createUserAccountThroughAuth>("comments")
+            commentsCollection:this.getDbName().collection<createUserAccountThroughAuth>("users")
         }
     }
 

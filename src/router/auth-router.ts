@@ -12,15 +12,11 @@ import {
 } from "../middleware/inputValidationMiddleware";
 import {errorsValidation} from "../middleware/errorsValidation";
 import {AuthService} from "../domain/auth-service";
-import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
-import {refreshTokenCollection} from "../db/mongo-db";
-import {CommentsService} from "../domain/comments/comments-service";
 import {ResultStatus} from "../_util/enum";
-import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
-import {Result} from "../model/result.type";
 import {authRefreshTokenMiddleware} from "../middleware/authMiddleware/authRefreshTokenUser";
 import {authTokenLogoutMiddleware} from "../middleware/authMiddleware/authLogoutUser";
+import {delay} from "../__tests__/e2e/utils/timer";
 
 
 export const authRouter = Router({})
@@ -32,6 +28,7 @@ authRouter
         if (!user.data || user.status === ResultStatus.Unauthorized) return res.sendStatus(401)
 
         const token = await JwtService.createJWT(user.data.id)// создаем токен для Authorisation
+
         const tokenRefresh = await JwtService.createJWTRefresh(user.data.id)//создаем токен для Cookies
         //
         await JwtService.updateDBJWT();
@@ -47,7 +44,7 @@ authRouter
 
     .post('/refresh-token', authRefreshTokenMiddleware, async (req: Request, res: Response) => {
         if (!req.userId) return res.sendStatus(401)
-
+        await delay(200)
         // res.clearCookie('refreshToken');
         const accessToken = await JwtService.createJWT(req.userId)// создаем токен для Authorisation
         const tokenRefresh = await JwtService.createJWTRefresh(req.userId)//создаем токен для Cookies
@@ -111,7 +108,7 @@ authRouter
     })
 
     //выход и отчистка TokenDB
-    .post("/logout",authTokenLogoutMiddleware, async (req: Request, res: Response) => {
+    .post("/logout", authTokenLogoutMiddleware, async (req: Request, res: Response) => {
 
         return res.sendStatus(204);
     })
