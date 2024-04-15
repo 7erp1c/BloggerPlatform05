@@ -1,11 +1,12 @@
 import {app} from "./app";
 import dotenv from 'dotenv'
-import {connectToDB} from "./db/mongo-db";
+import {connectToDB} from "./db/db";
+
 
 dotenv.config()
 
 
-const port = process.env.PORT || 4000
+export const port = process.env.PORT || 4000
 
 export const startApp = async() => {
     await connectToDB()

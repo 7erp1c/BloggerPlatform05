@@ -6,11 +6,11 @@ import {
     UsersInputType,
     UserViewModelType
 } from "../model/usersType/inputModelTypeUsers";
-import { usersCollection} from "../db/mongo-db";
 import {getAuthUsersView, getUsersView} from "../model/usersType/getUsersView";
 import {Result} from "../model/result.type";
 import {ResultStatus} from "../_util/enum";
 import {getAuthTypeEndpointMe} from "../model/authType/authType";
+import {db} from "../db/db";
 
 
 export const UsersQueryRepository = {
@@ -32,7 +32,7 @@ export const UsersQueryRepository = {
                 };
             }
             // рассчитать лимиты для запроса к DB
-            const documentsTotalCount = await usersCollection.countDocuments(searchKey); // Получите общее количество блогов
+            const documentsTotalCount = await db.getCollections().usersCollection.countDocuments(searchKey); // Получите общее количество блогов
             const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Рассчитайте общее количество страниц в соответствии с размером страницы
             const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize; // Подсчитать количество пропущенных документов перед запрошенной страницей
 
@@ -46,7 +46,7 @@ export const UsersQueryRepository = {
             else sortKey = {createdAt: sortDirection};
 
             // Получать документы из DB
-            const users: createUserAccountThroughAuth[] = await usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
+            const users: createUserAccountThroughAuth[] = await db.getCollections().usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
 
             return {
                 pagesCount: pageCount,
@@ -57,7 +57,7 @@ export const UsersQueryRepository = {
             }
         },
     async findUserById(id: string):Promise<Result<getAuthTypeEndpointMe| null>> {
-        const user: createUserAccountThroughAuth[]|null =  await usersCollection.find({id}, {projection: {_id: 0}}).toArray()
+        const user: createUserAccountThroughAuth[]|null =  await db.getCollections().usersCollection.find({id}, {projection: {_id: 0}}).toArray()
         if(!user) return {
             status: ResultStatus.Unauthorized,
             errorMessage: 'User was not found by id',
@@ -71,7 +71,7 @@ export const UsersQueryRepository = {
 
     },
     async findUserByIdAllModel(id: string):Promise<Result<createUserAccountThroughAuth| null>> {
-        const user =  await usersCollection.findOne({id}, {projection: {_id: 0}})
+        const user =  await db.getCollections().usersCollection.findOne({id}, {projection: {_id: 0}})
         if(!user) return {
             status: ResultStatus.Unauthorized,
             errorMessage: 'User was not found by id',
@@ -85,7 +85,7 @@ export const UsersQueryRepository = {
 
     },
     async findUserByEmail(email: string) {
-        return await usersCollection.findOne({"accountData.email": email}, {projection: {_id: 0}})
+        return await db.getCollections().usersCollection.findOne({"accountData.email": email}, {projection: {_id: 0}})
     },
 
 

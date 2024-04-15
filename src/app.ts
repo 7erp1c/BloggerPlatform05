@@ -2,10 +2,11 @@ import express, { Request, Response} from 'express'
 import {blogsRouter} from "./router/blogs-router";
 import {postsRouter} from "./router/posts-router";
 import {usersRouter} from "./router/users-router";
-import { dbName} from './db/mongo-db';
 import { authRouter } from './router/auth-router';
 import {commentsRouter} from "./router/comments/comments-router";
 import cookieParser from "cookie-parser";
+import {db} from "./db/db";
+
 export const app = express()
 
 app.use(express.json())
@@ -25,7 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 app.delete('/testing/all-data', async (req, res) => {
     try {
-        await dbName.dropDatabase();
+        await db.getDbName().dropDatabase();
         res.sendStatus(204); // Отправляем статус 204 после успешного удаления базы данных
     } catch (error) {
         console.error(error);

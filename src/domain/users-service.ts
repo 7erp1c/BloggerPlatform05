@@ -4,10 +4,7 @@ import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
-import {AuthService} from "./auth-service";
 import {ResultStatus} from "../_util/enum";
-import {JwtService} from "../application/jwt-service";
-import {refreshTokenCollection} from "../db/mongo-db";
 import {Result} from "../model/result.type";
 
 

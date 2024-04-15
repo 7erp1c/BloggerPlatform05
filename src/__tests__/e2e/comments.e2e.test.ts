@@ -1,5 +1,5 @@
 import {MongoMemoryServer} from 'mongodb-memory-server'
-import {db} from "./utils/db";
+import {db} from "../../db/db";
 import {app} from "../../app";
 import request from "supertest";
 

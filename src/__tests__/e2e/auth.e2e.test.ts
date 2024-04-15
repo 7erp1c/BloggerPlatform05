@@ -1,12 +1,12 @@
 //в тесте используется таймер т.к. токены генерятся одинаковые
 import request from "supertest"
-import {dbName, usersCollection} from "../../db/mongo-db";
+
 import {app} from "../../app";
 import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repository";
 import {delay} from "./utils/timer";
 import {CreateUserThroughRegistration} from "./utils/createUser";
 import {MongoMemoryServer} from "mongodb-memory-server";
-import {db} from "./utils/db";
+import {db} from "../../db/db";
 
 
 const routerName = '/auth/'
@@ -64,7 +64,7 @@ describe("AuthTest", () => {
             const registration = await CreateUserThroughRegistration(app)
             console.log(registration.body)
 
-            const user = (await usersCollection.find({}).toArray())[0]
+            const user = (await db.getCollections().usersCollection.find({}).toArray())[0]
             firstCode = user.emailConfirmation?.confirmationCode
             console.log("FIRST CODE " + firstCode)
 
@@ -94,7 +94,7 @@ describe("AuthTest", () => {
                     "email": "ul_tray@bk.ru"
                 })
                 .expect(204)
-            const userAfterResend = (await usersCollection.find({}).toArray())[0]
+            const userAfterResend = (await db.getCollections().usersCollection.find({}).toArray())[0]
             secondCode = userAfterResend.emailConfirmation?.confirmationCode
             expect(firstCode).not.toEqual(secondCode)
 
@@ -191,7 +191,7 @@ describe("AuthTest", () => {
         })
         it("Must receive two pairs of tokens", async () => {
             //обновляем пару accessToken и refreshToken, используем "testRefreshToken1"://____//
-            await delay(200)
+            await delay(400)
             const authRefreshToken = await request(app)
                 .post("/auth/refresh-token")
                 .set("Cookie", testRefreshToken1)
@@ -246,7 +246,7 @@ describe("AuthTest", () => {
                 .post("/auth/logout")
                 .set("Cookie", testRefreshToken2)
                 .expect(204)
-            const collection = dbName.collection('old-old-token')
+            const collection = db.getDbName().collection('old-old-token')
             const count = await collection.countDocuments();
             // Проверка, что количество документов в коллекции равно 0 (т.е. коллекция пустая)
             expect(count).toBe(0);

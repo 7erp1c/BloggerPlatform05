@@ -4,8 +4,8 @@ import {
     SearchBlogRepositoryType,
     SortBlogRepositoryType
 } from "../model/blogsType/blogsView";
-import {blogCollection} from "../db/mongo-db";
 import {getBlogsView} from "../model/blogsType/getBlogsView";
+import {db} from "../db/db";
 
 
 
@@ -21,7 +21,7 @@ export const BlogsQueryRepository = {
         if (searchData.searchNameTerm) searchKey = {name: {$regex: searchData.searchNameTerm,$options:"i"}};
 
         // рассчитать лимиты для запроса к DB
-        const documentsTotalCount = await blogCollection.countDocuments(searchKey); // Получите общее количество блогов
+        const documentsTotalCount = await db.getCollections().blogCollection.countDocuments(searchKey); // Получите общее количество блогов
         const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Рассчитайте общее количество страниц в соответствии с размером страницы
         const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize; // Подсчитать количество пропущенных документов перед запрошенной страницей
 
@@ -37,7 +37,7 @@ export const BlogsQueryRepository = {
         else sortKey = {createdAt: sortDirection};
 
         // Получать документы из DB
-        const blogs: blogsView[] = await blogCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
+        const blogs: blogsView[] = await db.getCollections().blogCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
 
         return {
             pagesCount: pageCount,
@@ -50,7 +50,7 @@ export const BlogsQueryRepository = {
 
      async getBlogById(id: string): Promise<blogsView | null> {
         try{
-            const blog: blogsView | null = await blogCollection.findOne({id}, {projection: {_id: 0}});
+            const blog: blogsView | null = await db.getCollections().blogCollection.findOne({id}, {projection: {_id: 0}});
             if (!blog) {
                 return null;
             }
