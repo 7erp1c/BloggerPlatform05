@@ -1,6 +1,6 @@
 import {PostsView, PostsViewModelType, SortPostRepositoryType} from "../model/postsType/postsView";
 import {getPostsView} from "../model/postsType/getPostsView";
-import {db} from "../db/db";
+import {connectMongoDb} from "../db/connect-mongo-db";
 
 
 export const PostsQueryRepository = {
@@ -13,7 +13,7 @@ export const PostsQueryRepository = {
         if (blogId) searchKey = {blogId: blogId};
 
          // есть ли у searchNameTerm параметр создания ключа поиска
-         const documentsTotalCount = await db.getCollections().postCollection.countDocuments(searchKey); // Receive total count of blogs
+         const documentsTotalCount = await connectMongoDb.getCollections().postCollection.countDocuments(searchKey); // Receive total count of blogs
         const pageCount = Math.ceil(documentsTotalCount / +sortData.pageSize); // Calculate total pages count according to page size
         const skippedDocuments = (+sortData.pageNumber - 1) * +sortData.pageSize;
 
@@ -30,7 +30,7 @@ export const PostsQueryRepository = {
         else sortKey = {createdAt: sortDirection};
 
         // Получать документы из DB
-        const posts: PostsView[] = await db.getCollections().postCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
+        const posts: PostsView[] = await connectMongoDb.getCollections().postCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
 
         return {
             pagesCount: pageCount,
@@ -46,7 +46,7 @@ export const PostsQueryRepository = {
     // return one post by id
     async getPostById(id: string): Promise<PostsView | null> {
         try {
-            const post: PostsView | null = await db.getCollections().postCollection.findOne({id},{ projection: { _id: 0 }});
+            const post: PostsView | null = await connectMongoDb.getCollections().postCollection.findOne({id},{ projection: { _id: 0 }});
             if (!post) {
                 return null;
             }

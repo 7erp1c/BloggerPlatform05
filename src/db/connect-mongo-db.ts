@@ -18,14 +18,14 @@ if(!mongoURI){
 }
 
 //логика работы MongoMemoryServer:
-export const db = {
+export const connectMongoDb = {
 
     client: {} as MongoClient,
 
     getDbName(): Db {
         return this.client.db(appConfig.DB_NAME)
     },
-    async run(url: string) {//метод подключения к db
+    async run(url: string) {//метод подключения к connectMongoDb
         try {
             this.client = new MongoClient(url)// создаём клиент монго клиент и подкидываем url
 
@@ -53,7 +53,7 @@ export const db = {
                 await this.getDbName().collection(collectionName).deleteMany({})
             }
         } catch (e: unknown) {
-            console.error('Error in drop db:', e)
+            console.error('Error in drop connectMongoDb:', e)
             await this.stop()
         }
     },
@@ -69,16 +69,16 @@ export const db = {
     }
 
 }
-//export let dbName = db.getDbName();
+//export let dbName = connectMongoDb.getDbName();
 
 export const connectToDB = async () => {
     try {
-        await db.run(mongoURI)
-        console.log('connected to db')
+        await connectMongoDb.run(mongoURI)
+        console.log('connected to connectMongoDb')
         return true
     } catch (e) {
         console.log(e)
-        await db.stop()
+        await connectMongoDb.stop()
         return false
     }
 }

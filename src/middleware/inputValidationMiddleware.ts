@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import {UsersService} from "../domain/users-service";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
-import {db} from "../db/db";
+import {connectMongoDb} from "../db/connect-mongo-db";
 
 export const blogsValidation = [
     body('name').trim().isString().isLength({min: 1, max: 15}),
@@ -17,7 +17,7 @@ export const postsValidation = [
     body('content').trim().isString().isLength({min: 1, max: 1000}).bail(),
     body('blogId').trim().isString().custom(
         async (value) => {
-            const blog = await db.getCollections().blogCollection.findOne({id: value});
+            const blog = await connectMongoDb.getCollections().blogCollection.findOne({id: value});
             if (!blog) {
                 throw new Error("Blog not found");
             }

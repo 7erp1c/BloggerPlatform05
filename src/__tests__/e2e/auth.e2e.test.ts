@@ -6,7 +6,7 @@ import {UsersQueryRepository} from "../../repositoriesQuery/user-query-repositor
 import {delay} from "./utils/timer";
 import {CreateUserThroughRegistration} from "./utils/createUser";
 import {MongoMemoryServer} from "mongodb-memory-server";
-import {db} from "../../db/db";
+import {connectMongoDb} from "../../db/connect-mongo-db";
 
 
 const routerName = '/auth/'
@@ -14,16 +14,16 @@ const routerName = '/auth/'
 describe("AuthTest", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create()
-        await db.run(mongoServer.getUri())
+        await connectMongoDb.run(mongoServer.getUri())
         //await client.connect();
        // await request(app).delete("/testing/all-data")
         // const mongoServer = await MongoMemoryServer.create() //использование локальной базы данных без демона
-        // await db.run(mongoServer.getUri()) // поднимет базу данных
+        // await connectMongoDb.run(mongoServer.getUri()) // поднимет базу данных
     })
     afterAll(async () => {
-        await db.drop();
+        await connectMongoDb.drop();
         //await client.close();
-        // await db.stop(); если заюзали MongoMemoryServer
+        // await connectMongoDb.stop(); если заюзали MongoMemoryServer
     })
     beforeAll(async () => {
         await request(app).delete("/testing/all-data");
@@ -64,7 +64,7 @@ describe("AuthTest", () => {
             const registration = await CreateUserThroughRegistration(app)
             console.log(registration.body)
 
-            const user = (await db.getCollections().usersCollection.find({}).toArray())[0]
+            const user = (await connectMongoDb.getCollections().usersCollection.find({}).toArray())[0]
             firstCode = user.emailConfirmation?.confirmationCode
             console.log("FIRST CODE " + firstCode)
 
@@ -94,7 +94,7 @@ describe("AuthTest", () => {
                     "email": "ul_tray@bk.ru"
                 })
                 .expect(204)
-            const userAfterResend = (await db.getCollections().usersCollection.find({}).toArray())[0]
+            const userAfterResend = (await connectMongoDb.getCollections().usersCollection.find({}).toArray())[0]
             secondCode = userAfterResend.emailConfirmation?.confirmationCode
             expect(firstCode).not.toEqual(secondCode)
 
@@ -246,7 +246,7 @@ describe("AuthTest", () => {
                 .post("/auth/logout")
                 .set("Cookie", testRefreshToken2)
                 .expect(204)
-            const collection = db.getDbName().collection('old-old-token')
+            const collection = connectMongoDb.getDbName().collection('old-old-token')
             const count = await collection.countDocuments();
             // Проверка, что количество документов в коллекции равно 0 (т.е. коллекция пустая)
             expect(count).toBe(0);

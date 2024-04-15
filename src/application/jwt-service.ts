@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {settings} from "../setting";
 import {ObjectId} from "mongodb";
-import {db} from "../db/db";
+import {connectMongoDb} from "../db/connect-mongo-db";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 
 
@@ -37,7 +37,7 @@ export const JwtService = {
         }
     },
     async updateDBJWT(){
-        const allUpdateOldRefreshJWT = await db.getCollections().refreshTokenCollection.updateMany({}, { $set: { isValid: false } });
+        const allUpdateOldRefreshJWT = await connectMongoDb.getCollections().refreshTokenCollection.updateMany({}, { $set: { isValid: false } });
 
     }
 

@@ -1,5 +1,5 @@
 import {MongoMemoryServer} from 'mongodb-memory-server'
-import {db} from "../../db/db";
+import {connectMongoDb} from "../../db/connect-mongo-db";
 import {app} from "../../app";
 import request from "supertest";
 
@@ -10,19 +10,19 @@ describe("Comments test", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create()
         const mongoURI = mongoServer.getUri()
-        await db.run(mongoURI)//url приходит из MongoMemoryServer
+        await connectMongoDb.run(mongoURI)//url приходит из MongoMemoryServer
     });
 
     afterAll(async () => {
-        await db.drop();
+        await connectMongoDb.drop();
     })
     afterAll(async () => {
-        await db.stop()
+        await connectMongoDb.stop()
     });
 
     describe("Comments",  () => {
 
-        it("Not receive comments, because userId absent in db", async ()=>{
+        it("Not receive comments, because userId absent in connectMongoDb", async ()=>{
             await request(app).get("/comments/1232443413")
                 .expect(404)
         })

@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {JwtService} from "../../application/jwt-service";
 import {RefreshTokenRepository} from "../../repositories/old-token/refreshTokenRepository";
-import {db} from "../../db/db";
+import {connectMongoDb} from "../../db/connect-mongo-db";
 
 
 export const authTokenLogoutMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -25,7 +25,7 @@ export const authTokenLogoutMiddleware = async (req: Request, res: Response, nex
         return res.status(401).send('the token is invalid')
     }
     //чистим DB токенов
-    await db.getCollections().refreshTokenCollection.deleteMany({})
+    await connectMongoDb.getCollections().refreshTokenCollection.deleteMany({})
 
     if (refreshTokenStatusValid) {
         return next()

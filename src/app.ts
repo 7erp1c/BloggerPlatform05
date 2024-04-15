@@ -5,7 +5,7 @@ import {usersRouter} from "./router/users-router";
 import { authRouter } from './router/auth-router';
 import {commentsRouter} from "./router/comments/comments-router";
 import cookieParser from "cookie-parser";
-import {db} from "./db/db";
+import {connectMongoDb} from "./db/connect-mongo-db";
 
 export const app = express()
 
@@ -26,7 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 app.delete('/testing/all-data', async (req, res) => {
     try {
-        await db.getDbName().dropDatabase();
+        await connectMongoDb.getDbName().dropDatabase();
         res.sendStatus(204); // Отправляем статус 204 после успешного удаления базы данных
     } catch (error) {
         console.error(error);

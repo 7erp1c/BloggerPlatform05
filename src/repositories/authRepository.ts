@@ -1,10 +1,10 @@
-import {db} from "../db/db";
+import {connectMongoDb} from "../db/connect-mongo-db";
 
 
 export const AuthUsersRepository = {
 
     async deleteUser(id: string): Promise<boolean> {
-        const result = await db.getCollections().usersCollection.deleteOne({id: id})
+        const result = await connectMongoDb.getCollections().usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
 }

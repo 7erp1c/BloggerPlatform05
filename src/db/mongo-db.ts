@@ -1,5 +1,5 @@
 // import dotenv from "dotenv";
-// import {db} from "./db";
+// import {connectMongoDb} from "./connectMongoDb";
 //
 //
 // dotenv.config()
@@ -11,10 +11,10 @@
 // }
 //
 //
-// //export const client: MongoClient = await db.run(mongoURI)
+// //export const client: MongoClient = await connectMongoDb.run(mongoURI)
 //
 //
-// export let dbName = db.getDbName();
+// export let dbName = connectMongoDb.getDbName();
 
 // export const blogCollection: Collection<blogsView> = dbName.collection<blogsView>("blogs")
 // export const postCollection: Collection<PostsView> = dbName.collection<PostsView>("posts")
@@ -23,12 +23,12 @@
 // export  const refreshTokenCollection:Collection<OldTokenDB> = dbName.collection<OldTokenDB>("old-old-token")
 // export const connectToDB = async () => {
 //     try {
-//         await db.run(mongoURI)
-//         console.log('connected to db')
+//         await connectMongoDb.run(mongoURI)
+//         console.log('connected to connectMongoDb')
 //         return true
 //     } catch (e) {
 //         console.log(e)
-//         await db.stop()
+//         await connectMongoDb.stop()
 //         return false
 //     }
 // }
