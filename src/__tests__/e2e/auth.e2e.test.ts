@@ -203,7 +203,6 @@ describe("AuthTest", () => {
             // Проверка, что refreshToken добавлен в куки
 
             const cookiesArray2 = authRefreshToken.header["set-cookie"]
-
             //Поиск refreshToken в куках
             for (let cookie2 of cookiesArray2) {
                 if (cookie2.includes("refreshToken")) {

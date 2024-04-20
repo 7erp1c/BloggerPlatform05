@@ -50,7 +50,6 @@ usersRouter.post('/',authGuardMiddleware,usersValidation,errorsValidation, async
 } )
 
 usersRouter.delete('/:id',authGuardMiddleware,errorsValidation, async (req: RequestWithDelete<_delete_all_>, res: Response) => {
-
     const isDelete = await UsersService.deleteUser(req.params.id)
     if (isDelete) {
         res.sendStatus(204);

@@ -5,8 +5,9 @@ import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUse
 import {blogsView} from "../model/blogsType/blogsView";
 import {PostsView} from "../model/postsType/postsView";
 import {CommentView} from "../model/commentsType/commentsView";
-import {OldTokenDB} from "../model/authType/authType";
+import {apiLogSchema, OldTokenDB, SessionsAddDB} from "../model/authType/authType";
 import {appConfig} from "../setting";
+import {app} from "../app";
 
 
 dotenv.config()
@@ -30,9 +31,10 @@ export const connectMongoDb = {
             this.client = new MongoClient(url)// создаём клиент монго клиент и подкидываем url
 
             await this.client.connect();//конектимся
-            console.log('client', this.client)
+            //console.log('client', this.client)
             await this.getDbName().command({ping: 1});//?
-            console.log('Connected successfully to mongo server', e)
+            console.log('Connected successfully to mongo server')
+            //console.log('Connected successfully to mongo server', e)
         } catch (e: unknown) {
             console.error("Can't connect to mongo server", e)
 
@@ -63,7 +65,9 @@ export const connectMongoDb = {
             postCollection:this.getDbName().collection<PostsView>("posts"),
             usersCollection:this.getDbName().collection<createUserAccountThroughAuth>("users"),
             commentsCollection:this.getDbName().collection<CommentView>("comments"),
-            refreshTokenCollection:this.getDbName().collection<OldTokenDB>("old-old-token")
+            refreshTokenCollection:this.getDbName().collection<OldTokenDB>("old-old-token"),
+            apiLogCollection:this.getDbName().collection<apiLogSchema>("apiLog"),
+            securityCollection:this.getDbName().collection<SessionsAddDB>("SecurityDevices")
 
         }
     }

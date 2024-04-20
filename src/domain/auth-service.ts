@@ -6,12 +6,20 @@ import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
+import {json} from "express";
 
 
 export const AuthService = {
 
     async createUser(login: string, password: string, email: string): Promise<UsersInputType | null> {
+        //проверка для интеграционных тестов
+        const searchUser = await UsersQueryRepository.findUserByEmail(email)
+        if(searchUser){
+            return null
+        }
         const user = await UsersService.createUser(login, password, email)
+        console.log(user)
+
         if (!user) {
             return null
         }
@@ -29,7 +37,7 @@ export const AuthService = {
     async confirmCode(code: string): Promise<{ status: boolean, message: string }> {
 
         let user = await UsersRepository.findUserByCode(code)
-
+        console.log("User in AuthService" +  JSON.stringify( user))
         if (!user) return {status: false, message: `no user in db user: ${user}`};
         if (user.emailConfirmation?.isConfirmed) return {status: false, message: `user is confirmed user: ${user}`};
         if (code !== user.emailConfirmation?.confirmationCode) return {

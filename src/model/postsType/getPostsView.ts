@@ -12,4 +12,4 @@ export const getPostsView = (dbPosts: PostsView): PostsView => {
         createdAt: dbPosts.createdAt
 
     }
-}
+};

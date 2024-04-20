@@ -17,22 +17,28 @@ import {ResultStatus} from "../_util/enum";
 import {authRefreshTokenMiddleware} from "../middleware/authMiddleware/authRefreshTokenUser";
 import {authTokenLogoutMiddleware} from "../middleware/authMiddleware/authLogoutUser";
 import {delay} from "../__tests__/e2e/utils/timer";
+import {SecurityService} from "../domain/security/security-service";
 
 
 export const authRouter = Router({})
 authRouter
     .post('/login', authValidation, errorsValidation, async (req: RequestWithUsers<authView>, res: Response) => {
         const {loginOrEmail, password} = req.body;
-
-        const user = await UsersService.checkCredentials(loginOrEmail, password)//находим user
+        const ip = req.ip || "unknown"
+        const userAgent = req.headers['user-agent'];
+        const deviceTitle = req.headers["user-agent"]?.split(" ")[1]||'unknown';
+        //если найдем User, логиним:
+        const user = await UsersService.searchAndLoginUserAfterRegistration(loginOrEmail, password)//находим user
         if (!user.data || user.status === ResultStatus.Unauthorized) return res.sendStatus(401)
-
-        const token = await JwtService.createJWT(user.data.id)// создаем токен для Authorisation
-
-        const tokenRefresh = await JwtService.createJWTRefresh(user.data.id)//создаем токен для Cookies
-        //
+        // создаем токен для Authorisation
+        const token = await JwtService.createJWT(user.data.id)
+        //создаем токен для Cookies
+        const tokenRefresh = await JwtService.createJWTRefresh(user.data.id)
+        const createSecurityDevaicesDB = await SecurityService.createAuthSession(tokenRefresh,deviceTitle,ip)
+            //статус всех старых токенов false
         await JwtService.updateDBJWT();
-        await JwtService.addTokenInDB(tokenRefresh)//добавляем cookies Token в DB
+        //добавляем tokenRefresh в DB
+        await JwtService.addTokenInDB(tokenRefresh)
 
 
         res.cookie('refreshToken', tokenRefresh, {httpOnly: true, secure: true})//передаем в cookie token
@@ -88,7 +94,7 @@ authRouter
         if (!user) {
             return res.sendStatus(400)
         }
-        res.setHeader('Content-Type', 'application/json');
+
         return res.status(204).json({
             user,
             message: 'Input data is accepted. Email with confirmation code will be sent to the provided email address.'

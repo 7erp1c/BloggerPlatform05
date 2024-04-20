@@ -86,7 +86,8 @@ export const UsersQueryRepository = {
     },
     async findUserByEmail(email: string) {
         return await connectMongoDb.getCollections().usersCollection.findOne({"accountData.email": email}, {projection: {_id: 0}})
-    },
+    }
+
 
 
 }

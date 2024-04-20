@@ -6,6 +6,7 @@ declare global {
         export interface Request {
             userId:  string | null
             user?: UsersOutputType|null
+            userIp?: string
         }
     }
 }

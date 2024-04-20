@@ -43,7 +43,7 @@ export const UsersService = {
 
     },
 
-    async checkCredentials(loginOrEmail:string, password:string):Promise<Result<createUserAccountThroughAuth| null>> {
+    async searchAndLoginUserAfterRegistration(loginOrEmail:string, password:string):Promise<Result<createUserAccountThroughAuth| null>> {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
 
         if(!user||!user.accountData.passwordSalt) return {

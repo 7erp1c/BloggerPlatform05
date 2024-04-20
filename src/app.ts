@@ -6,16 +6,22 @@ import { authRouter } from './router/auth-router';
 import {commentsRouter} from "./router/comments/comments-router";
 import cookieParser from "cookie-parser";
 import {connectMongoDb} from "./db/connect-mongo-db";
+import {apiReqLimitMiddleware} from "./middleware/authMiddleware/countAythDocumentsMiddleware";
+import useragent from 'express-useragent';
+import {securityRouter} from "./router/security/security-router";
 
 export const app = express()
-
+app.set("trust proxy", true);
+app.use(useragent.express());
 app.use(express.json())
 app.use(cookieParser())
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
-app.use('/auth/', authRouter)
+app.use('/auth/', apiReqLimitMiddleware, authRouter)
 app.use('/comments/',commentsRouter)
+app.use('/security/', securityRouter)
+
 
 
 app.get('/', (req: Request, res: Response) => {
