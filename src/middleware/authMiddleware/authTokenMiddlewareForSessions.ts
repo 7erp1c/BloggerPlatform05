@@ -4,16 +4,30 @@ import {Result} from "../../model/result.type";
 import {SecurityQueryRepository} from "../../repositoriesQuery/security-query-repository";
 
 
-export const authTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) return res.sendStatus(401)          //_____
-    //derbanim token
-    const token = req.headers.authorization?.split(' ')[1]// "bearer dgsdsdddgsdgddsgdgsdgdgsdgsdgsgdgsd"
-    //getting the id from the token
-    const userId = await JwtService.getIdFromToken(token)
+export const authTokenMiddlewareForSessions = async (req: Request, res: Response, next: NextFunction) => {
+
+    const {refreshToken} = req.cookies
+    if (!refreshToken) {
+        return res.sendStatus(401)
+    }
+    //getting the id from the token, протух
+    const userId = await JwtService.getIdFromToken(refreshToken)
+    if (!userId) {
+        return res.sendStatus(401)
+    }
+
     //getting the id from the sessions
-    const findUserIdAndDeviceId = await SecurityQueryRepository.findSessionByDeviceId(req.params.id)
+    const findSessionsByDeviceId = await SecurityQueryRepository.findSessionByDeviceId(req.params.deviceId)
+    console.log("___________findUserIdAndDeviceId  " + findSessionsByDeviceId)
+    //if not session
+    if (!findSessionsByDeviceId) {
+        return res.sendStatus(404)
+    }
     // If try to delete the deviceId of other user
-    if (userId != findUserIdAndDeviceId) return res.sendStatus(403)     //_____
+    const findUserIdInSessions = await SecurityQueryRepository.userSessionSearch(req.params.deviceId, refreshToken)
+    if (!findUserIdInSessions) {
+        return res.sendStatus(403)
+    }     //_____
 
     if (userId) {
         req.userId = userId

@@ -7,7 +7,9 @@ export type blogsCreateAndPutModel = {
 export type _delete_all_ ={
     id:string
 }
-
+export type _delete_one_ ={
+    deviceId:string
+}
 // export type blogsCreateAndPut = {
 //     id: string,
 //     name: string,

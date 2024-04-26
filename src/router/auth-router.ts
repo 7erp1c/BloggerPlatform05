@@ -17,53 +17,51 @@ import {ResultStatus} from "../_util/enum";
 import {authRefreshTokenMiddleware} from "../middleware/authMiddleware/authRefreshTokenUser";
 import {authTokenLogoutMiddleware} from "../middleware/authMiddleware/authLogoutUser";
 import {delay} from "../__tests__/e2e/utils/timer";
-import {SecurityService} from "../domain/security/security-service";
+import {addTokenInCookie} from "../managers/token-add-cookie";
 
 
 export const authRouter = Router({})
 authRouter
     .post('/login', authValidation, errorsValidation, async (req: RequestWithUsers<authView>, res: Response) => {
-        const {loginOrEmail, password} = req.body;
+        if (!req.body||!req.ip) return res.sendStatus(401)
+        const {loginOrEmail, password} = req.body
         const ip = req.ip || "unknown"
-        const userAgent = req.headers['user-agent'];
-        const deviceTitle = req.headers["user-agent"]?.split(" ")[1]||'unknown';
-        //если найдем User, логиним:
-        const user = await UsersService.searchAndLoginUserAfterRegistration(loginOrEmail, password)//находим user
-        if (!user.data || user.status === ResultStatus.Unauthorized) return res.sendStatus(401)
-        // создаем токен для Authorisation
-        const token = await JwtService.createJWT(user.data.id)
-        //создаем токен для Cookies
-        const tokenRefresh = await JwtService.createJWTRefresh(user.data.id)
-        const createSecurityDevaicesDB = await SecurityService.createAuthSession(tokenRefresh,deviceTitle,ip)
-            //статус всех старых токенов false
-        await JwtService.updateDBJWT();
-        //добавляем tokenRefresh в DB
-        await JwtService.addTokenInDB(tokenRefresh)
+        const userAgent = req.headers['user-agent']|| "unknown";
+        //login, create token, create session, add data token  in db
+        const loginUser = await AuthService.login(loginOrEmail, password, userAgent, ip)
+        if (!loginUser.data || loginUser.status === ResultStatus.Unauthorized) return res.sendStatus(401)
+        //закидываем токен в cookie (module в managers)
+        addTokenInCookie(res, loginUser.data.refresh)
 
-
-        res.cookie('refreshToken', tokenRefresh, {httpOnly: true, secure: true})//передаем в cookie token
         return res.status(200).send({
-            "accessToken": token
+            accessToken: loginUser.data.access
         })
 
     })
 
     .post('/refresh-token', authRefreshTokenMiddleware, async (req: Request, res: Response) => {
-        if (!req.userId) return res.sendStatus(401)
+        const {refreshToken} = req.cookies
+        if (!req.userId || !refreshToken) return res.sendStatus(401)
+        //the delay is so that the tokens are not the same
         await delay(200)
-        // res.clearCookie('refreshToken');
-        const accessToken = await JwtService.createJWT(req.userId)// создаем токен для Authorisation
-        const tokenRefresh = await JwtService.createJWTRefresh(req.userId)//создаем токен для Cookies
-
-        const addRefreshTokenToDB = await JwtService.addTokenInDB(tokenRefresh)//добавляем cookies Token в DB
-        if (!addRefreshTokenToDB) {
-            return res.status(500).send({message: {error: "Failed to add a token to the database"}})
-        }
-
-
-        res.cookie('refreshToken', tokenRefresh, {httpOnly: true, secure: true})//передаем в cookie token
+        const twoToken = await JwtService.tokenUpdate(req.userId,refreshToken)
+        if (!twoToken.data||twoToken.status === ResultStatus.Unauthorized) return res.sendStatus(401)
+        //
+        // //Creating access token
+        // const accessToken = await JwtService.createJWT(req.userId)
+        // //Creating refresh token
+        // const tokenRefresh = await JwtService.updateJWTRefresh(refreshToken)
+        // if (!tokenRefresh) return res.sendStatus(401)
+        //add refresh token in DB(blackList)
+        // const addRefreshTokenToDB = await JwtService.addTokenInDB(tokenRefresh)
+        // if (!addRefreshTokenToDB) {
+        //     return res.status(500).send({message: {error: "Failed to add a token to the database"}})
+        // }
+        //passing the cookie token
+        // res.cookie('refreshToken', tokenRefresh, {httpOnly: true, secure: true})
+        addTokenInCookie(res, twoToken.data.refresh)
         return res.status(200).send({
-            "accessToken": accessToken
+            accessToken: twoToken.data.refresh
         })
 
     })
@@ -75,7 +73,7 @@ authRouter
 
         if (!result.status) {
             res.status(400).json({
-                errorsMessages: [//result.message
+                errorsMessages: [
                     {
                         message: "Invalid code or expiration date expired",
                         field: "code"
@@ -105,7 +103,7 @@ authRouter
     //повторная отправка email
     .post('/registration-email-resending', authEmailValidation, errorsValidation, async (req: Request, res: Response) => {
         const {email} = req.body
-        console.log("EMAIL _______" + email)
+
         const result = await AuthService.confirmEmail(email)
         if (!result) {
             return res.sendStatus(500);

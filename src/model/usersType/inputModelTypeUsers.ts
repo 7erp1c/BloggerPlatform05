@@ -19,7 +19,7 @@ export type UsersInputType = {
     createdAt: string,
 }
 
-export type createUserAccountThroughAuth = {
+export type createUserAccAuth = {
     id: string,
     accountData: {
         login: string,

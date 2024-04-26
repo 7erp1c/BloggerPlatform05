@@ -1,4 +1,4 @@
-import {createUserAccountThroughAuth, UsersInputType} from "../../../model/usersType/inputModelTypeUsers";
+import {createUserAccAuth, UsersInputType} from "../../../model/usersType/inputModelTypeUsers";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
@@ -32,8 +32,8 @@ export const testSeader = {
         }
         return user
     },
-    async registerUser({login, password, email,confirmationCode,expirationDate,isConfirmed}: registerUserType): Promise<createUserAccountThroughAuth> {
-        const newUser: createUserAccountThroughAuth = {
+    async registerUser({login, password, email,confirmationCode,expirationDate,isConfirmed}: registerUserType): Promise<createUserAccAuth> {
+        const newUser: createUserAccAuth = {
             id: new ObjectId().toString(),
             accountData: {
                 login: login,

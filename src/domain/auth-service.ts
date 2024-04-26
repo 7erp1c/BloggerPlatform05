@@ -7,14 +7,43 @@ import {add} from "date-fns";
 import {RefreshTokenRepository} from "../repositories/old-token/refreshTokenRepository";
 import {UsersQueryRepository} from "../repositoriesQuery/user-query-repository";
 import {json} from "express";
+import {ResultStatus} from "../_util/enum";
+import {JwtService} from "../application/jwt-service";
+import {Result} from "../model/result.type";
+import {twoTokenType} from "../model/authType/authType";
 
 
 export const AuthService = {
+    async login(loginOrEmail: string, password: string, userAgent: string, ip: string): Promise<Result<twoTokenType | null>> {
+        //login
+        const user = await UsersService.loginUser(loginOrEmail, password)//находим user
+        if (!user.data || user.status === ResultStatus.Unauthorized) return {
+            status: ResultStatus.Unauthorized,
+            extensions: [{field: 'user', message: "User registration failed(AuthService)"}],
+            data: null,
+        }
+        const deviceTitle = userAgent.split(" ")[1] || 'unknown';
+        //create token
+        const twoToken = await JwtService.twoToken(user.data.id, deviceTitle, ip)
+        if (!twoToken.data || twoToken.status === ResultStatus.Unauthorized) return {
+            status: ResultStatus.Unauthorized,
+            extensions: [{field: 'twoToken', message: "The token has not been created(AuthService)"}],
+            data: null,
+        }
+        //res
+        return {
+            status: ResultStatus.Success,
+            data: {
+                access: twoToken.data.access,
+                refresh: twoToken.data.refresh
+            }
+        }
+    },
 
     async createUser(login: string, password: string, email: string): Promise<UsersInputType | null> {
         //проверка для интеграционных тестов
         const searchUser = await UsersQueryRepository.findUserByEmail(email)
-        if(searchUser){
+        if (searchUser) {
             return null
         }
         const user = await UsersService.createUser(login, password, email)
@@ -37,7 +66,7 @@ export const AuthService = {
     async confirmCode(code: string): Promise<{ status: boolean, message: string }> {
 
         let user = await UsersRepository.findUserByCode(code)
-        console.log("User in AuthService" +  JSON.stringify( user))
+        console.log("User in AuthService" + JSON.stringify(user))
         if (!user) return {status: false, message: `no user in db user: ${user}`};
         if (user.emailConfirmation?.isConfirmed) return {status: false, message: `user is confirmed user: ${user}`};
         if (code !== user.emailConfirmation?.confirmationCode) return {
@@ -54,7 +83,7 @@ export const AuthService = {
 
     },
 
-    async confirmEmail(email: string): Promise<{ status: boolean, message: string }>{
+    async confirmEmail(email: string): Promise<{ status: boolean, message: string }> {
 
         const newConfirmationCode = uuidv4()
         const newDate = add(new Date(), {hours: 48}).toISOString()

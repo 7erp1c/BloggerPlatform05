@@ -9,3 +9,8 @@ export const appConfig = {
     DB_NAME: "DataBase"
 };
 
+export const expiresIn = {
+    accessTime: "1000s",
+    refreshTime: "2000s"
+};
+

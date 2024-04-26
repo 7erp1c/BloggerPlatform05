@@ -1,4 +1,4 @@
-import {createUserAccountThroughAuth, UsersInputType} from "../model/usersType/inputModelTypeUsers";
+import {createUserAccAuth, UsersInputType} from "../model/usersType/inputModelTypeUsers";
 import bcrypt from 'bcrypt'
 import {UsersRepository} from "../repositories/usersRepository";
 import {ObjectId} from "mongodb";
@@ -16,7 +16,7 @@ export const UsersService = {
 
         const passwordSalt = await bcrypt.genSalt(3)
         const passwordHash = await this._generateHash(password, passwordSalt)
-        let newUser: createUserAccountThroughAuth = {
+        let newUser: createUserAccAuth = {
             id: new ObjectId().toString(),
             accountData: {
                 login: login,
@@ -43,7 +43,7 @@ export const UsersService = {
 
     },
 
-    async searchAndLoginUserAfterRegistration(loginOrEmail:string, password:string):Promise<Result<createUserAccountThroughAuth| null>> {
+    async loginUser(loginOrEmail:string, password:string):Promise<Result<createUserAccAuth| null>> {
         const user = await UsersRepository.findByLoginOrEmail(loginOrEmail)
 
         if(!user||!user.accountData.passwordSalt) return {

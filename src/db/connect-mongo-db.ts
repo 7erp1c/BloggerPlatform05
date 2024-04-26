@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import * as e from "express";
 import {Db, MongoClient} from "mongodb";
-import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
+import {createUserAccAuth} from "../model/usersType/inputModelTypeUsers";
 import {blogsView} from "../model/blogsType/blogsView";
 import {PostsView} from "../model/postsType/postsView";
 import {CommentView} from "../model/commentsType/commentsView";
@@ -63,7 +63,7 @@ export const connectMongoDb = {
         return{
             blogCollection:this.getDbName().collection<blogsView>("blogs"),
             postCollection:this.getDbName().collection<PostsView>("posts"),
-            usersCollection:this.getDbName().collection<createUserAccountThroughAuth>("users"),
+            usersCollection:this.getDbName().collection<createUserAccAuth>("users"),
             commentsCollection:this.getDbName().collection<CommentView>("comments"),
             refreshTokenCollection:this.getDbName().collection<OldTokenDB>("old-old-token"),
             apiLogCollection:this.getDbName().collection<apiLogSchema>("apiLog"),

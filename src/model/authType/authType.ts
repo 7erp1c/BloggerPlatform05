@@ -5,6 +5,7 @@ import {add} from "date-fns";
 export type authView = {
     loginOrEmail: string,
     password: string
+    ip:string
 }
 
 export type getAuthTypeEndpointMe = {
@@ -12,15 +13,23 @@ export type getAuthTypeEndpointMe = {
     login: string,
     userId: string
 }
-export type accessTokenAndRefreshToken = {
-    accessToken: string
-    refreshToken: string
+export type twoTokenType = {
+    access: string
+    refresh: string
 }
-
+export type LoginData = {
+    loginOrEmail: string,
+    password: string,
+    ip: string,
+    deviceTitle: string
+}
 export interface OldTokenDB {
     oldToken: string,
+    userId?: string,
+    deviceId?: string,
     isValid: boolean
 }
+
 export type apiLogSchema = {
     IP: string,
     URL: string,
@@ -28,9 +37,9 @@ export type apiLogSchema = {
 }
 export type RefreshTokenPayloadType = {
     userId: string
-    deviceId:string
-    iat:string
-    exp:string
+    deviceId: string
+    iat: string
+    exp: string
 }
 export type SessionsAddDB = {
     userId: string,
@@ -43,7 +52,7 @@ export type SessionsAddDB = {
         expiredAt: string,
     }
 }
-export type getSecuritySessions ={
+export type getSecuritySessions = {
     ip: string,
     title: string,
     lastActiveDate: string,

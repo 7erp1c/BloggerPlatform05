@@ -1,5 +1,5 @@
 import {
-    createUserAccountThroughAuth,
+    createUserAccAuth,
     SearchUsersEmailRepositoryType,
     SearchUsersLoginRepositoryType,
     SortUsersRepositoryType,
@@ -46,7 +46,7 @@ export const UsersQueryRepository = {
             else sortKey = {createdAt: sortDirection};
 
             // Получать документы из DB
-            const users: createUserAccountThroughAuth[] = await connectMongoDb.getCollections().usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
+            const users: createUserAccAuth[] = await connectMongoDb.getCollections().usersCollection.find(searchKey).sort(sortKey).skip(+skippedDocuments).limit(+sortData.pageSize).toArray();
 
             return {
                 pagesCount: pageCount,
@@ -57,7 +57,7 @@ export const UsersQueryRepository = {
             }
         },
     async findUserById(id: string):Promise<Result<getAuthTypeEndpointMe| null>> {
-        const user: createUserAccountThroughAuth[]|null =  await connectMongoDb.getCollections().usersCollection.find({id}, {projection: {_id: 0}}).toArray()
+        const user: createUserAccAuth[]|null =  await connectMongoDb.getCollections().usersCollection.find({id}, {projection: {_id: 0}}).toArray()
         if(!user) return {
             status: ResultStatus.Unauthorized,
             errorMessage: 'User was not found by id',
@@ -70,7 +70,7 @@ export const UsersQueryRepository = {
         }
 
     },
-    async findUserByIdAllModel(id: string):Promise<Result<createUserAccountThroughAuth| null>> {
+    async findUserByIdAllModel(id: string):Promise<Result<createUserAccAuth| null>> {
         const user =  await connectMongoDb.getCollections().usersCollection.findOne({id}, {projection: {_id: 0}})
         if(!user) return {
             status: ResultStatus.Unauthorized,

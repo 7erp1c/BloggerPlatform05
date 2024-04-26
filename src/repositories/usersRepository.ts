@@ -1,11 +1,11 @@
 
-import {createUserAccountThroughAuth} from "../model/usersType/inputModelTypeUsers";
+import {createUserAccAuth} from "../model/usersType/inputModelTypeUsers";
 import {connectMongoDb} from "../db/connect-mongo-db";
 
 
 export const UsersRepository = {
 //post(/)
-    async createUser(newUser: createUserAccountThroughAuth): Promise<createUserAccountThroughAuth> {
+    async createUser(newUser: createUserAccAuth): Promise<createUserAccAuth> {
         await connectMongoDb.getCollections().usersCollection.insertOne(newUser)
         console.log(newUser)
         return newUser
