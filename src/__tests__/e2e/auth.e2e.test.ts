@@ -191,7 +191,7 @@ describe("AuthTest", () => {
         })
         it("Must receive two pairs of tokens", async () => {
             //обновляем пару accessToken и refreshToken, используем "testRefreshToken1"://____//
-            await delay(400)
+            await delay(600)
             const authRefreshToken = await request(app)
                 .post("/auth/refresh-token")
                 .set("Cookie", testRefreshToken1)

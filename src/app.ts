@@ -20,7 +20,7 @@ app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/auth/', apiReqLimitMiddleware, authRouter)
 app.use('/comments/',commentsRouter)
-app.use('/security/', securityRouter)
+app.use('/security/', apiReqLimitMiddleware, securityRouter)
 
 
 

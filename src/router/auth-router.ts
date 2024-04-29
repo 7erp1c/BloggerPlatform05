@@ -46,19 +46,7 @@ authRouter
         await delay(200)
         const twoToken = await JwtService.tokenUpdate(req.userId,refreshToken)
         if (!twoToken.data||twoToken.status === ResultStatus.Unauthorized) return res.sendStatus(401)
-        //
-        // //Creating access token
-        // const accessToken = await JwtService.createJWT(req.userId)
-        // //Creating refresh token
-        // const tokenRefresh = await JwtService.updateJWTRefresh(refreshToken)
-        // if (!tokenRefresh) return res.sendStatus(401)
-        //add refresh token in DB(blackList)
-        // const addRefreshTokenToDB = await JwtService.addTokenInDB(tokenRefresh)
-        // if (!addRefreshTokenToDB) {
-        //     return res.status(500).send({message: {error: "Failed to add a token to the database"}})
-        // }
-        //passing the cookie token
-        // res.cookie('refreshToken', tokenRefresh, {httpOnly: true, secure: true})
+
         addTokenInCookie(res, twoToken.data.refresh)
         return res.status(200).send({
             accessToken: twoToken.data.refresh

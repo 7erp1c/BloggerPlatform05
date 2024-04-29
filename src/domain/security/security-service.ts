@@ -35,7 +35,7 @@ export const SecurityService = {
         return await connectMongoDb.getCollections().securityCollection.countDocuments()
 
     },
-    async deleteDevicesSessionsById(id: string): Promise<boolean> {
+    async deleteDevicesSessionById(id: string): Promise<boolean> {
         return await securityRepository.deleteDevicesSessionsById(id)
     },
     //обновляем данные в db после обновления refresh token
@@ -58,7 +58,7 @@ export const SecurityService = {
         const decode = await JwtService.decodeRefreshToken(token)
         if (!decode)return null
         //удаляем сессию
-        const delAllS = await SecurityService.deleteDevicesSessionsById(decode?.deviceId)
+        const delAllS = await SecurityService.deleteDevicesSessionById(decode?.deviceId)
         //удаляем токен из DB
         const delAllT = await connectMongoDb.getCollections().refreshTokenCollection.deleteMany({deviceId: decode?.deviceId})
         if(!delAllS||!delAllT){

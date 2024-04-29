@@ -26,7 +26,7 @@ export const securityRouter = Router({})
     })
 
     .delete("/devices/:deviceId", authTokenMiddlewareForSessions, async (req: RequestWithDelete<_delete_one_>, res: Response) => {
-        const result = await SecurityService.deleteDevicesSessionsById(req.params.deviceId)
+        const result = await SecurityService.deleteDevicesSessionById(req.params.deviceId)
         if (!result) {
             res.sendStatus(404);
             return

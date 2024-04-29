@@ -17,7 +17,7 @@ export const CreateUserThroughRegistration = async (app:any)=>{
 //генерим много юзеров
 export const CreateUsersThroughRegistration = async (app:any,count:number)=>{
     const users = []
-    for(let i = 0; i<=count;i++) {
+    for(let i = 1; i<=count;i++) {
         const createUser = await request(app).post("/auth/registration")
             .send({
                 "login": "_I147aKCJ" + i,
